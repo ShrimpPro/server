@@ -1,7 +1,9 @@
+const IoT = require("../models/iot");
+
 class iotController {
   static async getData (req, res, next) {
     try {
-      
+
     } catch (error) {
       next(error);
     }

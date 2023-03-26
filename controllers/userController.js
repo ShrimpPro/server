@@ -1,3 +1,5 @@
+const User = require("../models/user");
+
 class userController {
   static async login (req, res, next) {
     try {
