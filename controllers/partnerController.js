@@ -1,3 +1,5 @@
+const Partner = require("../models/partner");
+
 class partnerController {
   static async getTemp (req, res, next) {
     try {
