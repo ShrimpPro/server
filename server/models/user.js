@@ -25,6 +25,8 @@ class User {
       email: user.email,
       phoneNumber: user.phoneNumber,
       address: user.address
+      // dibagian sini ditambahin pembeda pond besar & pond kecil
+      // tambahin isPond, isSubscribe, Pond (total), Payment
     };
   }
 
