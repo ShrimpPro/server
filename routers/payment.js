@@ -2,7 +2,7 @@ const router = require('express').Router();
 const PaymentController = require('../controllers/paymentController');
 const authentication = require("../middlewares/authentication");
 
-router.get("/invoice", PaymentController.createInvoice);
-router.get("/payout", PaymentController.createPayout);
+router.get("/invoice", authentication, PaymentController.createInvoice);
+router.get("/payout", authentication, PaymentController.createPayout);
 
 module.exports = router;
