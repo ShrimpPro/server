@@ -21,6 +21,10 @@ const errorHandler = (error, req, res, next) => {
     case 'JsonWebTokenError':
       res.status(401).json({ message: 'Please login first' });
       break;
+
+    case 'NotFound':
+      res.status(404).json({ message: 'Data not found' });
+      break;
   
     default:
       res.status(500).json({ message: 'Internal Server Error' });
