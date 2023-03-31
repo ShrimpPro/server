@@ -1,8 +1,7 @@
 const MongoClient = require("mongodb").MongoClient;
 const Xendit = require("xendit-node");
 
-const uri =
-  "mongodb+srv://shrimpproofficial:mp1DbApMXjZscxGI@shrimp-pro.wgxobmi.mongodb.net/test";
+const uri = process.env.MONGO_SECRET_KEY;
   
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
