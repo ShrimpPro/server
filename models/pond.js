@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const pondSchema = new Schema({
-  deviceId: {
-    type: String,
+  device: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Device',
     required: true
   },
   temp: {
