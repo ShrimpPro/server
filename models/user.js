@@ -21,11 +21,14 @@ class User {
     const user = await this.collection().findOne({ _id: new ObjectId(id) });
     return {
       id: user._id,
-      username: user.username,
       email: user.email,
-      phoneNumber: user.phoneNumber,
-      address: user.address
+      role: user.role,
     };
+  }
+
+  static async findEmail(email) {
+    const user = await this.collection().findOne({ email });
+    return user;
   }
 
   static async create(data) {

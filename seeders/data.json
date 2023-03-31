@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "email": "a@a.com",
+      "password": "a",
+      "role": "partner"
+    },
+    {
+      "email": "user@mail.com",
+      "password": "qwe",
+      "role": "user"
+    }
+  ]
+}
