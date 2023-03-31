@@ -16,8 +16,12 @@ const userSchema = new Schema({
     type: String,
     enum: ['admin', 'partner', 'user'],
     default: 'user'
-  }
-});
+  },
+  ponds: [{
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Pond'
+  }]
+}, { timestamps: true });
 
 userSchema.pre('save', function(next) {
   if (!this.isModified('password')) return next();

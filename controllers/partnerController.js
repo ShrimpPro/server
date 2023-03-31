@@ -1,25 +1,14 @@
-const Partner = require("../models/partner");
+const Pond = require("../models/pond");
+const History = require('../models/History');
+const Harvest = require('../models/Harvest');
 
 class partnerController {
-  static async getTemp (req, res, next) {
+  static async getPonds (req, res, next) {
     try {
-      
-    } catch (error) {
-      next(error);
-    }
-  }
-  
-  static async getPh (req, res, next) {
-    try {
-      
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async getHistories (req, res, next) {
-    try {
-      
+      const pond = await Pond.find()
+        .populate('histories')
+        .populate('harvests');
+      res.status(200).json(pond);
     } catch (error) {
       next(error);
     }
