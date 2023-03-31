@@ -1,7 +1,7 @@
 const Xendit = require("xendit-node");
 const x = new Xendit({
   secretKey:
-    "xnd_development_y1bHkYgUb1Su6DGxgCaTrs6MbQ9hJMaipKCDTvsfWRwwCYnytvQI2R6T0vbsGnCf", //<<< ini tolong dimasukin ke dotenv
+    "xnd_development_y1bHkYgUb1Su6DGxgCaTrs6MbQ9hJMaipKCDTvsfWRwwCYnytvQI2R6T0vbsGnCf", //<<< ini tolong dimasukin ke dotenv, udah boz
 });
 const { Invoice, Payout } = x;
 const invoiceSpecificOptions = {};
@@ -75,6 +75,8 @@ class PaymentController {
     let idPayout = "invoice-shrimPro-id-" + new Date().getTime().toString(); //
     let { customerEmail } = req.body; //ditangkap dari client
     let amount = +req.body.amount; // ditangkap dari client
+    
+    
     p.createPayout({
       externalID: idPayout,
       amount: amount,

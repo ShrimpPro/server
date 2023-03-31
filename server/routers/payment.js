@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 let PaymentController = require("../controllers/paymentController");
-const authentication = require("../middlewares/authentication");
+const authentication = require("../middlewares/authenticationPayment");
 
 app.get("/invoice", authentication, PaymentController.createInvoice);
 app.get("/payout", authentication, PaymentController.createPayout);
