@@ -1,9 +1,29 @@
+const MongoClient = require("mongodb").MongoClient;
 const Xendit = require("xendit-node");
-const x = new Xendit({
-  secretKey:
-    "xnd_development_y1bHkYgUb1Su6DGxgCaTrs6MbQ9hJMaipKCDTvsfWRwwCYnytvQI2R6T0vbsGnCf", //<<< ini tolong dimasukin ke dotenv
+
+const uri =
+  "mongodb+srv://shrimpproofficial:mp1DbApMXjZscxGI@shrimp-pro.wgxobmi.mongodb.net/test";
+  
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+client.connect((err) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  const collection = client.db("shrimp_pro").collection("orders");
+  // perform actions on the collection object
+
+  // close the MongoDB connection when done with the database operations
+  client.close();
 });
-const { Invoice, Payout } = x;
+
+const xendit = new Xendit({
+  secretKey:
+    "xnd_development_y1bHkYgUb1Su6DGxgCaTrs6MbQ9hJMaipKCDTvsfWRwwCYnytvQI2R6T0vbsGnCf",
+});
+
+const { Invoice, Payout } = xendit;
 const invoiceSpecificOptions = {};
 const payoutSpecificOptions = {};
 const i = new Invoice(invoiceSpecificOptions);
@@ -11,10 +31,9 @@ const p = new Payout(payoutSpecificOptions);
 
 class PaymentController {
   static createInvoice(req, res, next) {
-
     let idPayout = "invoice-shrimPro-id-" + new Date().getTime().toString(); //
     let { customerEmail, totalPond } = req.body; //ditangkap dari client
-    amount = +req.body.amount; // ditangkap dari client
+    let amount = +req.body.amount; // ditangkap dari client
 
     // TEST
     let isPond = 'POND BESAR'
@@ -40,12 +59,12 @@ class PaymentController {
           url: "https://yourcompany.com/example_item",
         },
       ],
-      
+
       //Ini fee buat handle IOT
       fees: [
         {
-          type: "Handling Fee",
-          value: 5000,
+          name: "Handling Fee",
+          amount: 5000,
         },
       ],
     })
