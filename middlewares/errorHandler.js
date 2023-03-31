@@ -1,8 +1,12 @@
 const errorHandler = (error, req, res, next) => {
   console.log(error);
   switch (error.name) {
-    case 'dummy':
-      res.status(200).json({ error: error.message });
+    case 'EmailPasswordRequired':
+      res.status(400).json({ message: 'Email and Password is required' });
+      break;
+
+    case 'EmailPasswordInvalid':
+      res.status(401).json({ message: 'Email or Password is invalid' });
       break;
   
     default:
