@@ -1,25 +1,7 @@
-const MongoClient = require("mongodb").MongoClient;
 const Xendit = require("xendit-node");
 
-const uri = process.env.MONGO_SECRET_KEY;
-  
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-client.connect((err) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  const collection = client.db("shrimp_pro").collection("orders");
-  // perform actions on the collection object
-
-  // close the MongoDB connection when done with the database operations
-  client.close();
-});
-
 const xendit = new Xendit({
-  secretKey:
-    "xnd_development_y1bHkYgUb1Su6DGxgCaTrs6MbQ9hJMaipKCDTvsfWRwwCYnytvQI2R6T0vbsGnCf",
+  secretKey: process.env.API_XENDIT
 });
 
 const { Invoice, Payout } = xendit;
@@ -31,8 +13,9 @@ const p = new Payout(payoutSpecificOptions);
 class PaymentController {
   static createInvoice(req, res, next) {
     let idPayout = "invoice-shrimPro-id-" + new Date().getTime().toString(); //
-    let { customerEmail, totalPond } = req.body; //ditangkap dari client
+    let { totalPond } = req.body; //ditangkap dari client
     let amount = +req.body.amount; // ditangkap dari client
+    if (!amount) throw { name: "AmountRequired" };
 
     // TEST
     let isPond = 'POND BESAR'
@@ -46,7 +29,7 @@ class PaymentController {
 
     i.createInvoice({
       externalID: idPayout,
-      payerEmail: customerEmail,
+      payerEmail: req.user.email,
       description: "ShrimPro",
       amount: amount, // amount kan penjumlahan (subscribe&device). berarti amount dibuat dari client-side. jangan dihardcode supaya dinamis 
       // ini nama itemnya ada apa aja (array of object)
@@ -89,12 +72,11 @@ class PaymentController {
 
   static createPayout(req, res, next) {
     let idPayout = "invoice-shrimPro-id-" + new Date().getTime().toString(); //
-    let { customerEmail } = req.body; //ditangkap dari client
     let amount = +req.body.amount; // ditangkap dari client
     p.createPayout({
       externalID: idPayout,
       amount: amount,
-      payerEmail: customerEmail,
+      payerEmail: req.user.email,
     }).then((response) => {
       console.log(response);
     });

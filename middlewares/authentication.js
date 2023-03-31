@@ -1,3 +1,4 @@
+const { verifyToken } = require("../helpers/jwt");
 const User = require("../models/user");
 
 const authentication = async (req, res, next) => {
@@ -7,13 +8,13 @@ const authentication = async (req, res, next) => {
 
     const payload = verifyToken(access_token);
 
-    const currentUser = await User.findByPk(payload.id);
+    const currentUser = await User.findById(payload.id);
     if (!currentUser) throw { name: 'Unauthenticated' };
 
     req.user = {
-      id: currentUser.id,
-      username: currentUser.username,
-      email: currentUser.email
+      id: currentUser._id,
+      email: currentUser.email,
+      role: currentUser.role
     }
 
     next();

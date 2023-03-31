@@ -1,21 +1,13 @@
-const { MongoClient } = require('mongodb');
-
+const mongoose = require('mongoose');
 const url = process.env.MONGO_SECRET_KEY;
-const client = new MongoClient(url);
 const dbName = 'shrimp_pro';
-let db;
 
-async function mongoConnect() {
-  try {
-    await client.connect();
-    console.log('Connected successfully to server');
-    db = client.db(dbName);
-    return 'done.';
-  } catch (error) {
-    await client.close();
-  }
-}
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, dbName: dbName });
 
-const getDatabase = () => db;
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('Connected successfully to server with Mongoose');
+});
 
-module.exports = { mongoConnect, getDatabase };
+module.exports = db;
