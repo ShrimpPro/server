@@ -4,11 +4,12 @@ const iotRouter = require('./iot');
 const partnerRouter = require('./partners');
 const paymentRouter = require('./payment');
 const { errorHandler } = require('../middlewares/errorHandler');
+const { authentication } = require('../middlewares/authentication');
 
 router.use('/users', userRouter);
 router.use('/iot', iotRouter);
-router.use('/partners', partnerRouter);
-router.use('/payments', paymentRouter);
+router.use('/partners', authentication, partnerRouter);
+router.use('/payments', authentication, paymentRouter);
 router.use(errorHandler);
 
 module.exports = router;
