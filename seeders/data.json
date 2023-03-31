@@ -1,14 +1,81 @@
 {
   "users": [
     {
+      "_id": "64268c2d952b0d397e577096",
       "email": "a@a.com",
       "password": "a",
       "role": "partner"
     },
     {
+      "_id": "64268c2d952b0d397e577097",
       "email": "user@mail.com",
       "password": "qwe",
       "role": "user"
+    }
+  ],
+  "ponds": [
+    {
+      "_id": "6425db4ba1202bb6288f31d9",
+      "deviceId": "6425d846a1202bb62882fe7d",
+      "temp": 22.2,
+      "ph": 22.2,
+      "userId": "64268c2d952b0d397e577096",
+      "history": [
+        "64265a1fa1202bb6286a0a51",
+        "64265a1fa1202bb6286a0a52",
+        "64265a1fa1202bb6286a0a53"
+      ],
+      "harvest": [
+        "6425dd80a1202bb628980d6d",
+        "6425dd80a1202bb628980d6e",
+        "6425dd80a1202bb628980d6f"
+      ]
+    }
+  ],
+  "harvests": [
+    {
+      "_id": "6425dd80a1202bb628980d6d",
+      "capital": 1000000,
+      "earning": 5000000,
+      "quality": "Baik",
+      "description": "udang-udang berotak udang",
+      "pondId": "6425db4ba1202bb6288f31d9"
+    },
+    {
+      "_id": "6425dd80a1202bb628980d6e",
+      "capital": 2000000,
+      "earning": 8000000,
+      "quality": "Cukup",
+      "description": "udang-udangnya kebanyakan",
+      "pondId": "6425db4ba1202bb6288f31d9"
+    },
+    {
+      "_id": "6425dd80a1202bb628980d6f",
+      "capital": 2000000,
+      "earning": 10000000,
+      "quality": "Baik",
+      "description": "udang-udang sudah digoreng",
+      "pondId": "6425db4ba1202bb6288f31d9"
+    }
+  ],
+  "histories": [
+    {
+      "_id": "64265a1fa1202bb6286a0a51",
+      "temp": 23.33,
+      "ph": 23.33,
+      "pondId": "6425db4ba1202bb6288f31d9"
+    },
+    {
+      "_id": "64265a1fa1202bb6286a0a52",
+      "temp": 22.44,
+      "ph": 22.44,
+      "pondId": "6425db4ba1202bb6288f31d9"
+    },
+    {
+      "_id": "64265a1fa1202bb6286a0a53",
+      "temp": 23.11,
+      "ph": 23.11,
+      "pondId": "6425db4ba1202bb6288f31d9"
     }
   ]
 }
