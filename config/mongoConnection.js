@@ -1,8 +1,8 @@
 const { MongoClient } = require('mongodb');
 
-const url = 'mongodb://127.0.0.1:27017/';
+const url = process.env.MONGO_SECRET_KEY;
 const client = new MongoClient(url);
-const dbName = 'ShrimpPro';
+const dbName = 'shrimp_pro';
 let db;
 
 async function mongoConnect() {
@@ -12,7 +12,7 @@ async function mongoConnect() {
     db = client.db(dbName);
     return 'done.';
   } catch (error) {
-    await client.close()
+    await client.close();
   }
 }
 
