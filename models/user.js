@@ -1,46 +1,30 @@
-const { ObjectId } = require('mongodb');
-const { getDatabase } = require('../config/mongoConnection');
+const mongoose = require('mongoose');
 const { hashPassword } = require('../helpers/bcrypt');
+const { Schema } = mongoose;
 
-class User {
-  static collection() {
-    const db = getDatabase();
-    const userCollection = db.collection('users');
-    return userCollection;
+const userSchema = new Schema({
+  email: {
+    type: String,
+    required: [true, 'Email and Password is required'],
+    unique: true
+  },
+  password: {
+    type: String,
+    required: [true, 'Email and Password is required']
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'partner', 'user'],
+    default: 'user'
   }
+});
 
-  static async findAll() {
-    const users = await this.collection().find().toArray();
-    return users.map(el => {
-      delete el.password;
-      return el;
-    });
-  }
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password')) return next();
+  this.password = hashPassword(this.password);
+  next();
+});
 
-  static async findOne(id) {
-    const user = await this.collection().findOne({ _id: new ObjectId(id) });
-    return {
-      id: user._id,
-      email: user.email,
-      role: user.role,
-    };
-  }
-
-  static async findEmail(email) {
-    const user = await this.collection().findOne({ email });
-    return user;
-  }
-
-  static async create(data) {
-    data.password = hashPassword(data.password);
-    const createdUser = await this.collection().insertOne(data);
-    return createdUser;
-  }
-
-  static async delete(id) {
-    const deletedUser = await this.collection().deleteOne({ _id: new ObjectId(id) });
-    return deletedUser;
-  }
-}
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
