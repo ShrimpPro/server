@@ -1,7 +1,9 @@
 const errorHandler = (error, req, res, next) => {
   console.log(error);
+  console.log(error.name);
   switch (error.name) {
     case 'ValidationError':
+    case 'MongoServerError':
       res.status(400).json({ message: error.message });
       break;
 
