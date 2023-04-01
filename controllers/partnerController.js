@@ -1,6 +1,6 @@
 const Pond = require("../models/pond");
-const History = require('../models/History');
-const Harvest = require('../models/Harvest');
+const History = require('../models/history');
+const Harvest = require('../models/harvest');
 const Device = require("../models/device");
 
 class partnerController {
