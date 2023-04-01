@@ -11,7 +11,7 @@ const pondSchema = new Schema({
     type: Number,
     default: null
   },
-  ph: {
+  pH: {
     type: Number,
     default: null
   },

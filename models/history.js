@@ -3,16 +3,10 @@ const { Schema } = mongoose;
 
 const historySchema = new Schema({
   temp: {
-    type: Number,
-    required: true
+    type: Number
   },
-  ph: {
-    type: Number,
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    required: true
+  pH: {
+    type: Number
   },
   pondId: {
     type: mongoose.SchemaTypes.ObjectId,
