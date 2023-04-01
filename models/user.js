@@ -14,7 +14,8 @@ const userSchema = new Schema({
   },
   membership: {
     type: String,
-    enum: ['premium', 'basic']
+    enum: ['premium', 'basic'],
+    default: null
   },
   ponds: [{
     type: mongoose.SchemaTypes.ObjectId,
