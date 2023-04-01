@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const iotController = require('../controllers/iotController');
 
-router.get('/data', iotController.getData);
-router.post('/data', iotController.createData);
+router.get('/devices', iotController.getAllDevices);
+router.get('/devices/:pondId', iotController.findDevice);
 
 module.exports = router;
