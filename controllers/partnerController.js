@@ -16,6 +16,32 @@ class partnerController {
     }
   }
 
+  static async addDeviceAndPond(req, res, next) {
+    try {
+      const { id } = req.user;
+      const { name } = await Device.findOne().sort({$natural:-1});
+      const newName = `device-${Number(name.split('-')[1]) + 1}`;
+
+      const createdDevice = await Device.create({
+        name: newName,
+        type: 'esp32',
+        detail: 'alat sensor pengukur ph dan temperatur'
+      });
+
+      const createdPond = await Pond.create({
+          userId: id,
+          device: createdDevice._id
+      });
+
+      createdDevice.pond = createdPond._id;
+      await createdDevice.save();
+
+      res.status(201).json({ device: createdDevice, pond: createdPond });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async addHarvest(req, res, next) {
     try {
       const { pondId } = req.params;
