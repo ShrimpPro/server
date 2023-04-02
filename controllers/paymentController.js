@@ -1,85 +1,66 @@
-const Xendit = require("xendit-node");
+const Xendit = require('../lib/xendit');
+const Order = require("../models/order");
 
-const xendit = new Xendit({
-  secretKey: process.env.API_XENDIT
-});
 
-const { Invoice, Payout } = xendit;
-const invoiceSpecificOptions = {};
-const payoutSpecificOptions = {};
-const i = new Invoice(invoiceSpecificOptions);
-const p = new Payout(payoutSpecificOptions);
+
+// const invoiceSpecificOptions = {};
+// const payoutSpecificOptions = {};
+// const i = new Invoice(invoiceSpecificOptions);
+// const p = new Payout(payoutSpecificOptions);
 
 class PaymentController {
-  static createInvoice(req, res, next) {
-    let idPayout = "invoice-shrimPro-id-" + new Date().getTime().toString(); //
-    let { totalPond } = req.body; //ditangkap dari client
-    let amount = +req.body.amount; // ditangkap dari client
-    if (!amount) throw { name: "AmountRequired" };
+  static async createInvoice(req, res, next) {
+    try {
+      // dari react native ngirim body isPond 'PREMIUM' | 'BASIC'
+      let { isPond, totalPond } = req.body // dari client
+      let totalPrice
+      
 
-    // TEST
-    let isPond = 'POND BESAR'
-    let totalPrice = 0
+      if (isPond === 'PREMIUM') {
+        totalPrice = 100000 + totalPond * 10000
+      } else {
+        totalPrice = totalPond * 10000
+      }
 
-    if (isPond === 'POND BESAR') {
-      totalPrice = 100000 + totalPond * 10000
-    } else {
-      totalPrice = totalPond * 10000
-    }
-
-    i.createInvoice({
-      externalID: idPayout,
-      payerEmail: req.user.email,
-      description: "ShrimPro",
-      amount: amount, // amount kan penjumlahan (subscribe&device). berarti amount dibuat dari client-side. jangan dihardcode supaya dinamis 
-      // ini nama itemnya ada apa aja (array of object)
-      items: [
-        {
-          name: "Device IOT",
-          quantity: totalPond,
-          price: totalPrice,
-          url: "https://yourcompany.com/example_item",
-        },
-      ],
-
-      //Ini fee buat handle IOT
-      fees: [
-        {
-          name: "Handling Fee",
-          amount: 5000,
-        },
-      ],
-    })
-      .then((response) => {
-
-
-        // KALO BERHASIL, maka :
-        // RUBAH isSubscribe to TRUE
-        // UPDATE PAYMENT to SUCCESS
-        // UPDATE totalPond ke DB
-
-        // ELSE (GAGAL)
-        // PAYMENT = FAILED
-
-        res.status(200).json(response);
-
-
+      const invoice = await Xendit.getXenditInvoice({
+        external_id: 'invoice-shrimPro-id-' + new Date().getTime().toString(),
+        amount: totalPrice,
+        payer_email: req.user.email,
+        description: `invoice for ${"ShrimPro"}`,
       })
-      .catch((err) => {
-        next(err);
-      });
+      // insert ordernya disini
+      console.log(invoice)
+      await Order.create({
+        totalPrice: totalPrice,
+        user: req.user.id,
+        status: 'PENDING',
+        invoice: invoice.invoce_url
+      })
+      res.status(200).json(invoice)
+    } catch (error) {
+      next(error)
+    }
   }
 
-  static createPayout(req, res, next) {
-    let idPayout = "invoice-shrimPro-id-" + new Date().getTime().toString(); //
-    let amount = +req.body.amount; // ditangkap dari client
-    p.createPayout({
-      externalID: idPayout,
-      amount: amount,
-      payerEmail: req.user.email,
-    }).then((response) => {
-      console.log(response);
-    });
+  // - Update status jika sudah bayar yang premium === Subscribed & device (Pond besar)
+  // else sudah bayar !premium & device (Pond Kecil, device maks 3 device)
+
+  static async paid(req, res, next) {
+    try {
+      let orderId = req.body.orderId
+      const currentPaid = await Order.findById(orderId);
+      if (!currentPaid) throw { name: 'NotFound' };
+
+      currentPaid.status = 'SUCCESS';
+      const updatePaid = await currentPaid.save();
+      res.status(200).json(updatePaid);
+      // manggil ketika pembayaran sukses setelah deploy
+      // status pending dirubah jd success
+      // tambahin biar pas udh dibayar, mengurangi serangan hacker 
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
   }
 }
 module.exports = PaymentController;
