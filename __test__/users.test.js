@@ -9,21 +9,17 @@ describe('User collection', () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       dbName: 'testdb'
-    })
-    .then( async () => {
-      await User.create({
-        email: 'testlogin@example.com',
-        password: 'password'
+       }).then( async () => {
+        await User.create({
+          email: 'testlogin@example.com',
+          password: 'password'
+        })
       })
-    })
   });
 
   afterAll(async () => {
-    await mongoose.connection.close();
-  });
-
-  afterEach(async () => {
     await User.deleteMany({});
+    await mongoose.connection.close();
   });
 
   describe('POST /register', () => {
@@ -34,6 +30,7 @@ describe('User collection', () => {
       };
       const response = await request(app).post('/users/register').send(user);
       expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty('_id', expect.any(String));
       expect(response.body).toHaveProperty('_id', expect.any(String));
       expect(response.body).toHaveProperty('email', user.email);
       expect(response.body).toHaveProperty('membership', null);
@@ -56,11 +53,6 @@ describe('User collection', () => {
 
   describe('POST /login', () => {
     it('success, should return an access token', async () => {
-      await User.create({
-        email: 'testlogin@example.com',
-        password: 'password',
-        membership: 'basic'
-      })
       const user = {
         email: 'testlogin@example.com',
         password: 'password'

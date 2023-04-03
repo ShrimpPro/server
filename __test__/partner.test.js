@@ -60,15 +60,22 @@ describe('Partner collection', () => {
   });
 
   describe('GET /ponds', () => {
-    it.only('success, should return ponds list', async () => {
+    it('success, should return ponds list', async () => {
       const response = await request(app).get('/partners/ponds').set({access_token});
       expect(response.status).toBe(200);
         expect(response.body).toBeInstanceOf(Object)
     });
+
+    it('fail (invalid access_token), should return Please login first', async () => {
+      const response = await request(app).get('/partners/ponds').set({});
+      expect(response.status).toBe(401);
+        expect(response.body).toBeInstanceOf(Object)
+    });
+
   });
 
   describe('POST /ponds', () => {
-    it.only('success, should add new devices and ponds', async () => {
+    it('success, should add new devices and ponds', async () => {
       const response = await request(app).post('/partners/ponds').set({access_token});
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('device', expect.any(Object));
@@ -86,8 +93,16 @@ describe('Partner collection', () => {
     });
   });
 
+  describe('GET /ponds/:id', () => {
+    it('success, should return pond detail', async () => {
+      const response = await request(app).get('/partners/ponds/' + pondId).set({access_token});
+      expect(response.status).toBe(200);
+        expect(response.body).toBeInstanceOf(Object)
+    });
+  });
+
   describe('GET /harvests', () => {
-    it.only('success, should return harvests list', async () => {
+    it('success, should return harvests list', async () => {
       const response = await request(app).get('/partners/harvests').set({access_token});
       expect(response.status).toBe(200);
       response.body.forEach((el) => {
@@ -99,10 +114,19 @@ describe('Partner collection', () => {
         expect(el).toHaveProperty('pondId', expect.any(String));
       })
     });
+    jest.mock(Harvest, () => ({
+      find: jest.fn().mockRejectedValue(new Error('Test error')),
+    }));
+    it('fail (ISE), should return an error', async () => {
+      const response = await request(app).get('/partners/harvests').set({access_token});
+      expect(response.status).toEqual(500);
+      expect(response.body).toEqual({ message: 'Test error' });
+      expect(errorHandlerMock).toHaveBeenCalled();
+    });
   });
 
   describe('GET /harvests:id', () => {
-    it.only('success, should return harvest data by id', async () => {
+    it('success, should return harvest data by id', async () => {
       const response = await request(app).get('/partners/harvests/' + harvestId).set({access_token});
       expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('_id', expect.any(String));
@@ -113,7 +137,7 @@ describe('Partner collection', () => {
         expect(response.body).toHaveProperty('pondId', expect.any(String));
     });
 
-    it.only('fail (not found), should return a message: Data Data not found', async () => {
+    it('fail (not found), should return a message: Data Data not found', async () => {
       const response = await request(app).get('/partners/harvests/64299c983278418f9a6f720b').set({access_token});
       expect(response.status).toBe(404);
         expect(response.body).toHaveProperty('message', 'Data not found');
@@ -121,7 +145,7 @@ describe('Partner collection', () => {
   });
 
   describe('POST /harvests/:pondId', () => {
-    it.only('success, should add new harvest data', async () => {
+    it('success, should add new harvest data', async () => {
       const harvest = {
         capital: 1000000,
         earning: 5000000,
@@ -138,7 +162,7 @@ describe('Partner collection', () => {
         expect(response.body).toHaveProperty('pondId', String(pondId));
     });
 
-    it.only('fail (not found), should return a message: Data Data not found', async () => {
+    it('fail (not found), should return a message: Data Data not found', async () => {
       const harvest = {
         capital: 1000000,
         earning: 5000000,
@@ -152,7 +176,7 @@ describe('Partner collection', () => {
   });
 
   describe('PUT /harvests/:id', () => {
-    it.only('success, should changed harvest data', async () => {
+    it('success, should changed harvest data', async () => {
       const harvest = {
         capital: 1000000,
         earning: 5000000,
@@ -169,7 +193,7 @@ describe('Partner collection', () => {
         expect(response.body).toHaveProperty('pondId', String(pondId));
     });
 
-    it.only('fail (not found), should return a message: Data Data not found', async () => {
+    it('fail (not found), should return a message: Data Data not found', async () => {
       const harvest = {
         capital: 1000000,
         earning: 5000000,
@@ -181,7 +205,7 @@ describe('Partner collection', () => {
        expect(response.body).toHaveProperty('message', 'Data not found');
     });
 
-    it.only('fail (null capital), should return an error message', async () => {
+    it('fail (null capital), should return an error message', async () => {
       const harvest = {
         earning: 5000000,
         quality: "Cukup",
@@ -192,7 +216,7 @@ describe('Partner collection', () => {
        expect(response.body).toHaveProperty('message', 'Harvest validation failed: capital: Path `capital` is required.');
     });
 
-    it.only('fail (null quality), should return an error message', async () => {
+    it('fail (null quality), should return an error message', async () => {
       const harvest = {
         earning: 5000000,
         capital: 5000000,
@@ -204,11 +228,17 @@ describe('Partner collection', () => {
     });
   });
 
-  describe('GET /ponds', () => {
-    it.only('success, should return ponds list', async () => {
-      const response = await request(app).get('/partners/ponds').set({access_token});
+  describe('DELETE /harvests/:id', () => {
+    it('success, should remove harvest by id', async () => {
+      const response = await request(app).delete('/partners/harvests/' + harvestId).set({access_token});
       expect(response.status).toBe(200);
-        expect(response.body).toBeInstanceOf(Object)
+      expect(response.body).toHaveProperty('message', 'Harvest removed');
+    });
+
+    it('fail (not found), should return an error message', async () => {
+      const response = await request(app).delete('/partners/harvests/642a52434eca1d8fb4e84677').set({access_token});
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('message', 'Data not found');
     });
   });
 })

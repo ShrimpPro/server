@@ -6,11 +6,36 @@ const Device = require("../models/device");
 class partnerController {
   static async getPonds (req, res, next) {
     try {
-      const ponds = await Pond.find()
+      const ponds = await Pond.find({ userId: req.user.id })
         .populate('device')
-        .populate('histories')
+        .populate({
+            path: 'histories',
+            options: {
+                sort: { createdAt: -1 },
+                limit: 10
+            }
+        })
         .populate('harvests');
       res.status(200).json(ponds);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getPondDetail (req, res, next) {
+    try {
+      const { id } = req.params;
+      const pond = await Pond.findById(id)
+        .populate('device')
+        .populate({
+            path: 'histories',
+            options: {
+                sort: { createdAt: -1 },
+                limit: 10
+              }
+        })
+        .populate('harvests');
+      res.status(200).json(pond);
     } catch (error) {
       next(error);
     }
@@ -65,6 +90,7 @@ class partnerController {
       const harvests = await Harvest.find();
       res.status(200).json(harvests);
     } catch (error) {
+      console.log(error, '<<<<<<<<<<')
       next(error);
     }
   }

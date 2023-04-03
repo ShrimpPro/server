@@ -14,7 +14,7 @@ const userSchema = new Schema({
   },
   membership: {
     type: String,
-    enum: ['basic', 'premium', null],
+    enum: ['premium', 'basic', null],
     default: null
   },
   ponds: [{
