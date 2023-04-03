@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1680524549493" clover="3.2.0">
-  <project timestamp="1680524549493" name="All files">
-    <metrics statements="288" coveredstatements="159" conditionals="52" coveredconditionals="11" methods="26" coveredmethods="6" elements="366" coveredelements="176" complexity="0" loc="288" ncloc="288" packages="8" files="24" classes="24"/>
+<coverage generated="1680524954489" clover="3.2.0">
+  <project timestamp="1680524954490" name="All files">
+    <metrics statements="288" coveredstatements="164" conditionals="52" coveredconditionals="11" methods="26" coveredmethods="7" elements="366" coveredelements="182" complexity="0" loc="288" ncloc="288" packages="8" files="24" classes="24"/>
     <package name="server">
       <metrics statements="11" coveredstatements="11" conditionals="2" coveredconditionals="1" methods="0" coveredmethods="0"/>
       <file name="app.js" path="C:\Users\syasy\OneDrive\Documents\server\app.js">
@@ -200,20 +200,20 @@
       </file>
     </package>
     <package name="server.lib">
-      <metrics statements="11" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+      <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <file name="xendit.js" path="C:\Users\syasy\OneDrive\Documents\server\lib\xendit.js">
-        <metrics statements="11" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="1" count="2" type="stmt"/>
-        <line num="2" count="2" type="stmt"/>
-        <line num="3" count="2" type="stmt"/>
-        <line num="4" count="2" type="stmt"/>
-        <line num="7" count="2" type="stmt"/>
-        <line num="8" count="2" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
+        <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
       </file>
     </package>
     <package name="server.middlewares">
