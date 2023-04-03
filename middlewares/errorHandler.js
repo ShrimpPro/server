@@ -15,6 +15,14 @@ const errorHandler = (error, req, res, next) => {
       res.status(400).json({ message: 'Amount is required' });
       break;
 
+    case 'NoMembership':
+      res.status(400).json({ message: 'You need to be a member first' });
+      break;
+
+    case 'MaximumLimit':
+      res.status(400).json({ message: 'Maximum limit reached, please consider upgrading your membership' });
+      break;
+
     case 'EmailPasswordInvalid':
       res.status(401).json({ message: 'Email or Password is invalid' });
       break;
