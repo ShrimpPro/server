@@ -137,9 +137,46 @@ describe('PaymentController', () => {
       expect(Order.create).toHaveBeenCalledWith(expectedOrder);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(expectedInvoice);
-    });
-    
+    });  
   });
-});
 
-
+  describe('PaymentController', () => {
+    describe('updateStatusOrder', () => {
+      it('should update order status to EXPIRED', async () => {
+        const mockOrder = { 
+          id: 1,
+          invoice: 'INV123',
+          totalPrice: 10000,
+        };
+        Order.findOne = jest.fn().mockResolvedValue(mockOrder);
+        Order.update = jest.fn().mockResolvedValue([1]);
+  
+        const req = {
+          headers: {
+            "x-callback-token": process.env.CALLBACK_XENDIT,
+          },
+          body: {
+            status: "EXPIRED",
+            paid_amount: 0,
+            id: "INV123",
+          },
+        };
+        const res = {
+          status: jest.fn().mockReturnThis(),
+          json: jest.fn(),
+        };
+        const next = jest.fn();
+  
+        await PaymentController.updateStatusOrder(req, res, next);
+  
+        expect(Order.findOne).toHaveBeenCalledWith({ where: { invoice: req.body.id } });
+        expect(Order.update).toHaveBeenCalledWith(
+          { status: "EXPIRED" },
+          { where: { invoice: req.body.id } }
+        );
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({ message: "Update to Expired Success" });
+      });
+    });
+  });
+})
