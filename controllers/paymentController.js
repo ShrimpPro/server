@@ -7,7 +7,7 @@ class PaymentController {
     try {
       // dari react native ngirim body isPond 'PREMIUM' | 'BASIC'
       let { isPond, totalPond } = req.body // dari client
-      let totalPrice 
+      let totalPrice
 
 
       if (isPond === 'PREMIUM') {
@@ -25,13 +25,13 @@ class PaymentController {
       })
       // insert ordernya disini
       console.log(invoice)
-      const order = await Order.create({
+      await Order.create({
         totalPrice: totalPrice,
         user: req.user.id,
         status: 'PENDING',
         invoice: invoice.invoice_url
       })
-      res.status(200).json(invoice)
+      res.status(200).json(order)
     } catch (error) {
       next(error)
     }
