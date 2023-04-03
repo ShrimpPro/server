@@ -35,7 +35,7 @@ class PaymentController {
         totalPrice: totalPrice,
         user: req.user.id,
         status: 'PENDING',
-        invoice: invoice.invoce_url
+        invoice: invoice.invoice_url
       })
       res.status(200).json(invoice)
     } catch (error) {
