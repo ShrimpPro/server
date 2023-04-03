@@ -1,96 +1,182 @@
 const Xendit = require('../lib/xendit');
 const Order = require("../models/order");
+const PaymentController = require("../controllers/paymentController");
 
-
-class PaymentController {
-  static async createInvoice(req, res, next) {
-    try {
-      // dari react native ngirim body isPond 'PREMIUM' | 'BASIC'
-      let { isPond, totalPond } = req.body // dari client
-      let totalPrice
-
-
-      if (isPond === 'PREMIUM') {
-        totalPrice = 100000 + totalPond * 10000
-      } else {
-        (totalPond === 0) && (totalPond === 3)
-        totalPrice = totalPond * 10000
-      }
-
-      const invoice = await Xendit.getXenditInvoice({
-        external_id: 'invoice-shrimPro-id-' + new Date().getTime().toString(),
-        amount: totalPrice,
-        payer_email: req.user.email,
-        description: `invoice for ${"ShrimPro"}`,
-      })
-      // insert ordernya disini
-      console.log(invoice)
-      const order = await Order.create({
-        totalPrice: totalPrice,
-        user: req.user.id,
+describe('PaymentController', () => {
+  describe('createInvoice', () => {
+    it('should create invoice and order correctly', async () => {
+      const req = {
+        body: {
+          isPond: 'PREMIUM',
+          totalPond: 3
+        },
+        user: {
+          id: 'user-id',
+          email: 'user@example.com'
+        }
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
+      const expectedInvoice = {
+        id: 'invoice-id',
+        external_id: 'invoice-shrimPro-id-123456789',
+        amount: 130000,
+        payer_email: 'user@example.com',
+        description: 'invoice for ShrimPro',
+        invoice_url: 'https://invoice.xendit.com/invoice-url'
+      };
+      const expectedOrder = {
+        totalPrice: 130000,
+        user: 'user-id',
         status: 'PENDING',
-        invoice: invoice.invoice_url
-      })
-      res.status(200).json(order)
-    } catch (error) {
-      next(error)
-    }
-  }
+        invoice: 'https://invoice.xendit.com/invoice-url'
+      };
+      Xendit.getXenditInvoice = jest.fn().mockResolvedValue(expectedInvoice);
+      Order.create = jest.fn().mockResolvedValue(expectedOrder);
 
-  // - Update status jika sudah bayar yang premium === Subscribed & device (Pond besar)
-  // else sudah bayar !premium & device (Pond Kecil, device maks 3 device)
+      await PaymentController.createInvoice(req, res);
 
-  static async paid(req, res, next) {
-    try {
-      let orderId = req.body.orderId
-      const currentPaid = await Order.findById(orderId);
-      if (!currentPaid) throw { name: 'NotFound' };
+      expect(Xendit.getXenditInvoice).toHaveBeenCalledWith({
+        external_id: expect.stringContaining('invoice-shrimPro-id-'),
+        amount: 130000,
+        payer_email: 'user@example.com',
+        description: 'invoice for ShrimPro'
+      });
+      expect(Order.create).toHaveBeenCalledWith(expectedOrder);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expectedInvoice);
+    });
 
-      currentPaid.status = 'SUCCESS';
-      const updatePaid = await currentPaid.save();
-      res.status(200).json(updatePaid);
-    } catch (error) {
-      console.log(error)
-      next(error)
-    }
-  }
-
-  static async updateStatusOrder(req, res, next) {
-    try {
-      let x = req.headers["x-callback-token"];
-      let { status, paid_amount, id } = req.body;
-      if (x !== process.env.XENDIT_X) {
-        return res.status(401).json({ message: "You are not authorized" });
-      }
-      if (status === "PAID") {
-        let data = await Order.findOne({ where: { invoice: id } });
-        if (!data) {
-          return res.status(404).json({ message: "Data not found" });
+    it('should create order with correct price if isPond is BASIC', async () => {
+      const req = {
+        body: {
+          isPond: 'BASIC',
+          totalPond: 0
+        },
+        user: {
+          id: 'user-id',
+          email: 'user@example.com'
         }
-  
-        if (data.totalPrice !== paid_amount) {
-          return res
-            .status(400)
-            .json({ message: "Paid amount not same with amount" });
-        }
-  
-        await Order.update({ status: "PAID" }, { where: { invoice: id } });
-  
-        return res.status(200).json({ message: "Update to PAID Success" });
-      } else if (status === "EXPIRED") {
-        let data = await Order.findOne({ where: { invoice: id } });
-        if (!data) {
-          return res.status(404).json({ message: "Data not found" });
-        }
-  
-        await Order.update({ status: "EXPIRED" }, { where: { invoice: id } });
-  
-        return res.status(200).json({ message: "Update to Expired Success" });
-      }
-    } catch (err) {
-      next(err);
-    }
-  }
-}
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
+      const expectedInvoice = {
+        id: 'invoice-id',
+        external_id: 'invoice-shrimPro-id-123456789',
+        amount: 0,
+        payer_email: 'user@example.com',
+        description: 'invoice for ShrimPro',
+        invoice_url: 'https://invoice.xendit.com/invoice-url'
+      };
+      const expectedOrder = {
+        totalPrice: 0,
+        user: 'user-id',
+        status: 'PENDING',
+        invoice: 'https://invoice.xendit.com/invoice-url'
+      };
+      Xendit.getXenditInvoice = jest.fn().mockResolvedValue(expectedInvoice);
+      Order.create = jest.fn().mockResolvedValue(expectedOrder);
 
-module.exports = PaymentController;
+      await PaymentController.createInvoice(req, res);
+
+      expect(Xendit.getXenditInvoice).toHaveBeenCalledWith({
+        external_id: expect.stringContaining('invoice-shrimPro-id-'),
+        amount: 0,
+        payer_email: 'user@example.com',
+        description: 'invoice for ShrimPro'
+      });
+      expect(Order.create).toHaveBeenCalledWith(expectedOrder);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expectedInvoice);
+    });
+
+    it('should create order with correct price if isPond is BASIC and totalPond is 3', async () => {
+      const req = {
+        body: {
+          isPond:       'BASIC',
+          totalPond: 3
+        },
+        user: {
+          id: 'user-id',
+          email: 'user@example.com'
+        }
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
+      const expectedInvoice = {
+        id: 'invoice-id',
+        external_id: 'invoice-shrimPro-id-123456789',
+        amount: 30000,
+        payer_email: 'user@example.com',
+        description: 'invoice for ShrimPro',
+        invoice_url: 'https://invoice.xendit.com/invoice-url'
+      };
+      const expectedOrder = {
+        totalPrice: 30000,
+        user: 'user-id',
+        status: 'PENDING',
+        invoice: 'https://invoice.xendit.com/invoice-url'
+      };
+      Xendit.getXenditInvoice = jest.fn().mockResolvedValue(expectedInvoice);
+      Order.create = jest.fn().mockResolvedValue(expectedOrder);
+    
+      await PaymentController.createInvoice(req, res);
+    
+      expect(Xendit.getXenditInvoice).toHaveBeenCalledWith({
+        external_id: expect.stringContaining('invoice-shrimPro-id-'),
+        amount: 30000,
+        payer_email: 'user@example.com',
+        description: 'invoice for ShrimPro'
+      });
+      expect(Order.create).toHaveBeenCalledWith(expectedOrder);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expectedInvoice);
+    });  
+  });
+
+  describe('PaymentController', () => {
+    describe('updateStatusOrder', () => {
+      it('should update order status to EXPIRED', async () => {
+        const mockOrder = { 
+          id: 1,
+          invoice: 'INV123',
+          totalPrice: 10000,
+        };
+        Order.findOne = jest.fn().mockResolvedValue(mockOrder);
+        Order.update = jest.fn().mockResolvedValue([1]);
+  
+        const req = {
+          headers: {
+            "x-callback-token": process.env.CALLBACK_XENDIT,
+          },
+          body: {
+            status: "EXPIRED",
+            paid_amount: 0,
+            id: "INV123",
+          },
+        };
+        const res = {
+          status: jest.fn().mockReturnThis(),
+          json: jest.fn(),
+        };
+        const next = jest.fn();
+  
+        await PaymentController.updateStatusOrder(req, res, next);
+  
+        expect(Order.findOne).toHaveBeenCalledWith({ where: { invoice: req.body.id } });
+        expect(Order.update).toHaveBeenCalledWith(
+          { status: "EXPIRED" },
+          { where: { invoice: req.body.id } }
+        );
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({ message: "Update to Expired Success" });
+      });
+    });
+  });
+})
