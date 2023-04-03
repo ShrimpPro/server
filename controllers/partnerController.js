@@ -10,11 +10,11 @@ class partnerController {
       const ponds = await Pond.find({ userId: req.user.id })
         .populate('device')
         .populate({
-            path: 'histories',
-            options: {
-                sort: { createdAt: -1 },
-                limit: 10
-            }
+          path: 'histories',
+          options: {
+              sort: { createdAt: -1 },
+              limit: 7
+          }
         })
         .populate('harvests');
       res.status(200).json(ponds);
@@ -29,11 +29,11 @@ class partnerController {
       const pond = await Pond.findById(id)
         .populate('device')
         .populate({
-            path: 'histories',
-            options: {
-                sort: { createdAt: -1 },
-                limit: 10
-              }
+          path: 'histories',
+          options: {
+            sort: { createdAt: -1 },
+            limit: 7
+          }
         })
         .populate('harvests');
       res.status(200).json(pond);
@@ -59,8 +59,8 @@ class partnerController {
       });
 
       const createdPond = await Pond.create({
-          userId: id,
-          device: createdDevice._id
+        userId: id,
+        device: createdDevice._id
       });
 
       createdDevice.pond = createdPond._id;
