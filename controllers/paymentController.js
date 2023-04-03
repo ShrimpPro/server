@@ -2,6 +2,12 @@ const Xendit = require('../lib/xendit');
 const Order = require("../models/order");
 
 
+
+// const invoiceSpecificOptions = {};
+// const payoutSpecificOptions = {};
+// const i = new Invoice(invoiceSpecificOptions);
+// const p = new Payout(payoutSpecificOptions);
+
 class PaymentController {
   static async createInvoice(req, res, next) {
     try {
@@ -13,7 +19,9 @@ class PaymentController {
       if (isPond === 'PREMIUM') {
         totalPrice = 100000 + totalPond * 10000
       } else {
-        totalPrice = totalPond * 10000
+        if (totalPond > 3) {
+          totalPrice = totalPond * 10000
+        }
       }
 
       const invoice = await Xendit.getXenditInvoice({
@@ -41,20 +49,45 @@ class PaymentController {
 
   static async paid(req, res, next) {
     try {
-      let orderId = req.body.orderId
-      const currentPaid = await Order.findById(orderId);
-      if (!currentPaid) throw { name: 'NotFound' };
+      let x = req.headers["x-callback-token"];
+      let { status, paid_amount, id } = req.body;
+      if (x !== process.env.XENDIT_X) {
+        return res.status(401).json({ message: "You are not authorized" });
+      }
 
-      currentPaid.status = 'SUCCESS';
-      const updatePaid = await currentPaid.save();
-      res.status(200).json(updatePaid);
+      if (status === "PAID") {
+        let data = await Order.findOne({ where: { invoice: id } });
+        if (!data) {
+          return res.status(404).json({ message: "Data not found" });
+        }
+
+        if (data.totalPrice !== paid_amount) {
+          return res
+            .status(400)
+            .json({ message: "Paid amount not same with amount" });
+        }
+
+        await Order.update({ status: "PAID" }, { where: { invoice: id } });
+
+        return res.status(200).json({ message: "Update to PAID Success" });
+      }
+
+      if (!data) {
+        return res.status(404).json({ message: "Data not found" });
+      }
+      // if (!currentPaid) throw { name: 'NotFound' };
+
+      // currentPaid.status = 'SUCCESS';
+      // const updatePaid = await currentPaid.save();
+      // res.status(200).json(updatePaid);
       // manggil ketika pembayaran sukses setelah deploy
       // status pending dirubah jd success
-      // tambahin biar pas udh dibayar, mengurangi serangan hacker (---wajib)
-    } catch (error) {
+      // tambahin biar pas udh dibayar, mengurangi serangan hacker 
+   } catch (error) {
       console.log(error)
       next(error)
     }
   }
 }
+
 module.exports = PaymentController;
