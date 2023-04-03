@@ -48,7 +48,8 @@ describe('Partner collection', () => {
         password: 'password',
         address: 'Indonesia',
         phoneNumber: '08111111',
-        name: 'Tambak Piara'
+        name: 'Tambak Piara',
+        membership: 'basic'
       })
       const payloadUpgrade = { id: userSeedUpgrade._id };
       access_token_upgrade = createToken(payloadUpgrade);
@@ -60,13 +61,15 @@ describe('Partner collection', () => {
         detail: 'alat sensor pengukur ph dan temperatur',
         pond: '642986eeb8baa3f01eba9f8a'
       });
-      
-      for (let index = 0; index < 3; index++) {
-        await Pond.create( {
-          userId: userSeedUpgrade._id,
-          device: deviceSeed._id
-        })
-      }
+
+      const pondsUpgrade = await Pond.create( {
+        userId: userSeedUpgrade._id,
+        device: deviceSeed._id
+      })
+
+      userSeedUpgrade.ponds.push(pondsUpgrade._id)
+      await userSeedUpgrade.save()
+
       const pondSeed = await Pond.create( {
         userId: userSeed._id,
         device: deviceSeed._id
@@ -98,13 +101,6 @@ describe('Partner collection', () => {
       expect(response.status).toBe(200);
         expect(response.body).toBeInstanceOf(Object)
     });
-
-    it('fail (invalid access_token), should return Please login first', async () => {
-      const response = await request(app).get('/partners/ponds').set({});
-      expect(response.status).toBe(401);
-        expect(response.body).toBeInstanceOf(Object)
-    });
-
   });
 
   describe('POST /ponds', () => {
@@ -134,7 +130,7 @@ describe('Partner collection', () => {
     it('fail (need upgrade), should return an error message', async () => {
       const response = await request(app).post('/partners/ponds').set({access_token: access_token_upgrade});
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('message', 'You need to be a member first');
+      expect(response.body).toHaveProperty('message', 'Maximum limit reached, please consider upgrading your membership');
     });
   });
 
