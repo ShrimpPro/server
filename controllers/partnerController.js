@@ -59,6 +59,7 @@ class partnerController {
       const { id } = req.user;
       
       const currentUser = await User.findById(id);
+      console.log(currentUser, '<<<<<<<<<<<<<<<<< DEBUG')
       if (!currentUser.membership) throw { name: 'NoMembership' }
       if (currentUser.membership === 'basic' && currentUser.ponds.length === 1) throw { name: 'MaximumLimit' }
       

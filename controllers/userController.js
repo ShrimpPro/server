@@ -68,8 +68,8 @@ class userController {
 
       const payload = { id: userFound._id };
       const access_token = createToken(payload);
-
-      res.send({ access_token });
+      
+      res.status(200).json({ access_token });
     } catch (error) {
       next(error);
     }

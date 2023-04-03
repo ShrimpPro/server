@@ -11,9 +11,9 @@ const errorHandler = (error, req, res, next) => {
       res.status(400).json({ message: 'Email and Password is required' });
       break;
 
-    case 'AmountRequired':
-      res.status(400).json({ message: 'Amount is required' });
-      break;
+    // case 'AmountRequired':
+    //   res.status(400).json({ message: 'Amount is required' });
+    //   break;
 
     case 'NoMembership':
       res.status(400).json({ message: 'You need to be a member first' });
