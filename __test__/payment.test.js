@@ -1,77 +1,90 @@
-const mongoose = require('mongoose');
-const request = require('supertest');
-const express = require('express');
-const app = require('../app');
-const User = require('../models/user');
-const Order = require('../models/order');
-const { createToken } = require('../helpers/jwt');
-const PaymentRouter = require('../routers/payment');
+const Xendit = require('../lib/xendit');
+const Order = require("../models/order");
+const PaymentController = require("../controllers/paymentController");
 
-const paymentApp = express();
-paymentApp.use(express.json());
-paymentApp.use('/payments', PaymentRouter);
+// create mock request and response objects
+const req = {
+  user: { id: 1, email: "test@test.com" },
+  body: { isPond: "PREMIUM", totalPond: 2 },
+  headers: { "x-callback-token": process.env.CALLBACK_XENDIT }
+};
+const res = {
+  status: jest.fn(() => res),
+  json: jest.fn()
+};
+const next = jest.fn();
 
-describe('PaymentController', () => {
-  let server, token, db;
+// mock Xendit getXenditInvoice function
+jest.mock('../lib/xendit', () => ({
+  getXenditInvoice: jest.fn(() => Promise.resolve({
+    invoice_url: "https://example.com/invoice",
+    amount: 120000
+  }))
+}));
 
-  beforeAll(async () => {
-    db = await mongoose.connect(process.env.MONGO_TEST, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-
-    // create a new user to get the token
-    const user = await User.create({
-      name: 'a',
-      email: 'a@a.com',
-      password: 'a',
-    });
-
-    // create token
-    token = createToken({ id: user._id });
-
-    server = paymentApp.listen(4000, () => {
-      console.log('Server started on port 4000');
-    });
-  });
-
-  afterAll(async () => {
-    await server.close();
-    await db.connection.close();
-  });
-
-  describe('GET /payments/invoice', () => {
-    it('should create a new order and invoice', async () => {
-      const response = await request(paymentApp)
-        .get('/payments/invoice')
-        .send({ isPond: 'BASIC', totalPond: 2 })
-        .set('Authorization', `Bearer ${token}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('external_id');
-      expect(response.body).toHaveProperty('payer_email');
-    });
-  });
-
-  describe('GET /payments/paid', () => {
-    it('should update the order status to SUCCESS', async () => {
-      const order = await Order.create({
-        totalPrice: 200000,
-        user: new mongoose.Types.ObjectId(),
-        status: 'PENDING',
-        invoice: 'https://invoice.xendit.com/id/123456',
+describe("PaymentController", () => {
+  describe("createInvoice", () => {
+    it("should create a new invoice and order", async () => {
+      jest.spyOn(Order, "create").mockResolvedValueOnce({ id: 1 });
+      jest.spyOn(Order, "findOne").mockResolvedValueOnce({ id: 1 });
+      await PaymentController.createInvoice(req, res, next);
+      expect(Xendit.getXenditInvoice).toHaveBeenCalled();
+      expect(Order.create).toHaveBeenCalled();
+      expect(Order.findOne).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        invoice_url: "https://example.com/invoice",
+        amount: 120000
       });
+    });
+  });
 
-      const response = await request(paymentApp)
-        .get(`/payments/paid?orderId=${order._id}`)
-        .set('Authorization', `Bearer ${token}`);
+  describe("paid", () => {
+    it("should return 401 if callback token is invalid", async () => {
+      req.headers["x-callback-token"] = "invalid-token";
+      await PaymentController.paid(req, res, next);
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.json).toHaveBeenCalledWith({ message: "You are not authorized" });
+    });
 
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('status', 'SUCCESS');
+    it("should return 404 if invoice not found", async () => {
+      jest.spyOn(Order, "findOne").mockResolvedValueOnce(null);
+      await PaymentController.paid(req, res, next);
+      expect(Order.findOne).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: "Data not found" });
+    });
 
-      const updatedOrder = await Order.findById(order._id);
-      expect(updatedOrder.status).toBe('SUCCESS');
+    it("should return 400 if paid amount is not same with amount", async () => {
+      jest.spyOn(Order, "findOne").mockResolvedValueOnce({
+        totalPrice: 100000,
+        invoice: "123"
+      });
+      req.body.paid_amount = 50000;
+      req.body.id = "123";
+      await PaymentController.paid(req, res, next);
+      expect(Order.findOne).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ message: "Paid amount not same with amount" });
+    });
+
+    it("should update order status to PAID if payment status is PAID", async () => {
+      jest.spyOn(Order, "findOne").mockResolvedValueOnce({
+        totalPrice: 100000,
+        invoice: "123"
+      });
+      req.body.status = "PAID";
+      req.body.paid_amount = 100000;
+      req.body.id = "123";
+      jest.spyOn(Order, "update").mockResolvedValueOnce([1]);
+      await PaymentController.paid(req, res, next);
+      expect(Order.findOne).toHaveBeenCalled();
+      expect(Order.update).toHaveBeenCalledWith(
+        { status: "PAID" },
+        { where: { invoice: "123" } }
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: "Update to PAID Success" });
     });
   });
 });

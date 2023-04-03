@@ -14,14 +14,13 @@ class PaymentController {
       // dari react native ngirim body isPond 'PREMIUM' | 'BASIC'
       let { isPond, totalPond } = req.body // dari client
       let totalPrice
-      
+
 
       if (isPond === 'PREMIUM') {
         totalPrice = 100000 + totalPond * 10000
       } else {
-        if (totalPond > 3) {
-          totalPrice = totalPond * 10000
-        }
+        (totalPond === 0) && (totalPond === 3)
+        totalPrice = totalPond * 10000
       }
 
       const invoice = await Xendit.getXenditInvoice({
@@ -49,12 +48,29 @@ class PaymentController {
 
   static async paid(req, res, next) {
     try {
+      let orderId = req.body.orderId
+      const currentPaid = await Order.findById(orderId);
+      if (!currentPaid) throw { name: 'NotFound' };
+
+      currentPaid.status = 'SUCCESS';
+      const updatePaid = await currentPaid.save();
+      res.status(200).json(updatePaid);
+      // manggil ketika pembayaran sukses setelah deploy
+      // status pending dirubah jd success
+      // tambahin biar pas udh dibayar, mengurangi serangan hacker 
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  static async updateStatusOrder(req, res, next) {
+    try {
       let x = req.headers["x-callback-token"];
       let { status, paid_amount, id } = req.body;
       if (x !== process.env.XENDIT_X) {
         return res.status(401).json({ message: "You are not authorized" });
       }
-
       if (status === "PAID") {
         let data = await Order.findOne({ where: { invoice: id } });
         if (!data) {
@@ -70,22 +86,22 @@ class PaymentController {
         await Order.update({ status: "PAID" }, { where: { invoice: id } });
 
         return res.status(200).json({ message: "Update to PAID Success" });
+      } else if (status === "EXPIRED") {
+        let data = await Order.findOne({ where: { invoice: id } });
+        let orderProd = await OrderProduct.findAll({
+          where: { OrderId: data.id },
+        });
+        if (!data) {
+          return res.status(404).json({ message: "Data not found" });
+        }
+        let updatedPayment = await Order.update(
+          { status: "EXPIRED" },
+          { where: { invoice: id } }
+        );
+        return res.status(200).json({ message: "Update to Expired Success" });
       }
-
-      if (!data) {
-        return res.status(404).json({ message: "Data not found" });
-      }
-      // if (!currentPaid) throw { name: 'NotFound' };
-
-      // currentPaid.status = 'SUCCESS';
-      // const updatePaid = await currentPaid.save();
-      // res.status(200).json(updatePaid);
-      // manggil ketika pembayaran sukses setelah deploy
-      // status pending dirubah jd success
-      // tambahin biar pas udh dibayar, mengurangi serangan hacker 
-   } catch (error) {
-      console.log(error)
-      next(error)
+    } catch (err) {
+      next(err);
     }
   }
 }
