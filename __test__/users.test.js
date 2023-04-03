@@ -3,6 +3,8 @@ const User = require('../models/user');
 const request = require('supertest');
 const app = require('../app');
 
+let userId;
+
 describe('User collection', () => {
   beforeAll(async () => {
     await mongoose.connect(process.env.MONGO_TEST, {
@@ -10,10 +12,14 @@ describe('User collection', () => {
       useUnifiedTopology: true,
       dbName: 'testdb'
        }).then( async () => {
-        await User.create({
+        const userSeed = await User.create({
           email: 'testlogin@example.com',
-          password: 'password'
+          password: 'password',
+          address: 'Indonesia',
+          phoneNumber: '0822222222',
+          name: 'Tambak Piara'
         })
+        userId = userSeed._id
       })
   });
 
@@ -26,11 +32,13 @@ describe('User collection', () => {
     it('should create a new user', async () => {
       const user = {
         email: 'test@example.com',
-        password: 'password'
+        password: 'password',
+        address: 'Indonesia',
+        phoneNumber: '0822222222',
+        name: 'Tambak Piara'
       };
       const response = await request(app).post('/users/register').send(user);
       expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty('_id', expect.any(String));
       expect(response.body).toHaveProperty('_id', expect.any(String));
       expect(response.body).toHaveProperty('email', user.email);
       expect(response.body).toHaveProperty('membership', null);
@@ -107,7 +115,10 @@ describe('User collection', () => {
     it('success, should return an updated membership data', async () => {
       const memberPremium = await User.create({
         email: 'checkmember@example.com',
-        password: 'password'
+        password: 'password',
+        address: 'Indonesia',
+        phoneNumber: '0822222222',
+        name: 'Tambak Piara'
       })
       let id = String(memberPremium._id)
       const response = await request(app).patch('/users/membership/' + id ).send({membership: 'premium'});
@@ -120,6 +131,46 @@ describe('User collection', () => {
 
     it('fail (id not found), should return a message: Data not found', async () => {
       const response = await request(app).patch('/users/membership/64294078048f36630707dcf4').send({membership: 'premium'});
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('message', 'Data not found');
+    });
+  });
+
+  describe('GET /users/:id', () => {
+    it('success, should return an updated membership data', async () => {
+      const response = await request(app).get('/users/' + String(userId) );
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('_id', String(userId));
+      expect(response.body).toHaveProperty('email', 'testlogin@example.com');
+      expect(response.body).toHaveProperty('phoneNumber', expect.any(String));
+      expect(response.body).toHaveProperty('address', expect.any(String));
+      expect(response.body).toHaveProperty('name', expect.any(String));
+      expect(response.body).toHaveProperty('membership', null);
+      expect(response.body).toHaveProperty('ponds', expect.any(Array));
+    });
+  });
+
+  describe('PUT /users/:id', () => {
+    it('success, should return an updated membership data', async () => {
+      const memberPremium = await User.create({
+        email: 'changeEmail@example.com',
+        password: 'password',
+        address: 'Indonesia',
+        phoneNumber: '0822222222',
+        name: 'Tambak Piara',
+        membership: 'premium'
+      })
+
+      const response = await request(app).put('/users/' + String(userId) ).send(memberPremium);
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('_id',  String(userId));
+      expect(response.body).toHaveProperty('email', 'changeEmail@example.com');
+      expect(response.body).toHaveProperty('membership', 'premium');
+      expect(response.body).toHaveProperty('ponds', expect.any(Array));
+    });
+
+    it('fail (id not found), should return a message: Data not found', async () => {
+      const response = await request(app).put('/users/membership/64294078048f36630707dcf4').send({membership: 'premium'});
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty('message', 'Data not found');
     });

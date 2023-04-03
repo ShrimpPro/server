@@ -98,7 +98,6 @@ class partnerController {
       const harvests = await Harvest.find();
       res.status(200).json(harvests);
     } catch (error) {
-      console.log(error, '<<<<<<<<<<')
       next(error);
     }
   }

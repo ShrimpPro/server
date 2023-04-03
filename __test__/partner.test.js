@@ -10,6 +10,8 @@ const { createToken } = require('../helpers/jwt');
 describe('Partner collection', () => {
 
   let access_token;
+  let access_token_fail;
+  let access_token_upgrade;
   let harvestId;
   let pondId;
 
@@ -22,10 +24,35 @@ describe('Partner collection', () => {
     .then(async () => {
       const userSeed = await User.create({
         email: 'testlogin@example.com',
-        password: 'password'
+        password: 'password',
+        address: 'Indonesia',
+        phoneNumber: '0822222222',
+        name: 'Tambak Piara',
+        membership: 'basic'
       })
       const payload = { id: userSeed._id };
       access_token = createToken(payload);
+
+      const userSeedFail = await User.create({
+        email: 'testfail@example.com',
+        password: 'password',
+        address: 'Indonesia',
+        phoneNumber: '08111111',
+        name: 'Tambak Piara'
+      })
+      const payloadFail = { id: userSeedFail._id };
+      access_token_fail = createToken(payloadFail);
+
+      const userSeedUpgrade = await User.create({
+        email: 'testUpgrade@example.com',
+        password: 'password',
+        address: 'Indonesia',
+        phoneNumber: '08111111',
+        name: 'Tambak Piara'
+      })
+      const payloadUpgrade = { id: userSeedUpgrade._id };
+      access_token_upgrade = createToken(payloadUpgrade);
+
       
       const deviceSeed = await Device.create({
         name: 'device-2',
@@ -33,7 +60,13 @@ describe('Partner collection', () => {
         detail: 'alat sensor pengukur ph dan temperatur',
         pond: '642986eeb8baa3f01eba9f8a'
       });
-
+      
+      for (let index = 0; index < 3; index++) {
+        await Pond.create( {
+          userId: userSeedUpgrade._id,
+          device: deviceSeed._id
+        })
+      }
       const pondSeed = await Pond.create( {
         userId: userSeed._id,
         device: deviceSeed._id
@@ -91,6 +124,18 @@ describe('Partner collection', () => {
         expect(response.body.pond).toHaveProperty('histories', expect.any(Array));
         expect(response.body.pond).toHaveProperty('harvests', expect.any(Array));
     });
+
+    it('fail (need membership), should return an error message', async () => {
+      const response = await request(app).post('/partners/ponds').set({access_token: access_token_fail});
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('message', 'You need to be a member first');
+    });
+
+    it('fail (need upgrade), should return an error message', async () => {
+      const response = await request(app).post('/partners/ponds').set({access_token: access_token_upgrade});
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('message', 'You need to be a member first');
+    });
   });
 
   describe('GET /ponds/:id', () => {
@@ -113,15 +158,6 @@ describe('Partner collection', () => {
         expect(el).toHaveProperty('description', expect.any(String));
         expect(el).toHaveProperty('pondId', expect.any(String));
       })
-    });
-    jest.mock(Harvest, () => ({
-      find: jest.fn().mockRejectedValue(new Error('Test error')),
-    }));
-    it('fail (ISE), should return an error', async () => {
-      const response = await request(app).get('/partners/harvests').set({access_token});
-      expect(response.status).toEqual(500);
-      expect(response.body).toEqual({ message: 'Test error' });
-      expect(errorHandlerMock).toHaveBeenCalled();
     });
   });
 

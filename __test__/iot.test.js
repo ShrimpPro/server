@@ -17,7 +17,10 @@ describe('IoT collection', () => {
     }).then(async () => {
       const userSeed = await User.create({
         email: 'testlogin@example.com',
-        password: 'password'
+        password: 'password',
+        address: 'Indonesia',
+        phoneNumber: '0822222222',
+        name: 'Tambak Piara'
       })
 
       const deviceSeed = await Device.create({
