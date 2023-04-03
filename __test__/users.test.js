@@ -23,6 +23,10 @@ describe('User collection', () => {
       })
   });
 
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   afterAll(async () => {
     await User.deleteMany({});
     await mongoose.connection.close();
@@ -44,6 +48,16 @@ describe('User collection', () => {
       expect(response.body).toHaveProperty('membership', null);
       expect(response.body).toHaveProperty('ponds', expect.any(Array));
     });
+    
+    it('fail (ISE), should return error if User.create fails', async () => {
+      User.create = jest.fn().mockImplementation(() => {
+        throw new Error('mock error');
+      });
+      const response = await request(app).post('/users/register').send({});
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe('Internal Server Error');
+      User.create.mockReset();
+    });
   });
 
   describe('GET /users', () => {
@@ -56,6 +70,16 @@ describe('User collection', () => {
         expect(el).toHaveProperty('membership',  null)
         expect(el).toHaveProperty('ponds', expect.any(Array));
       })
+    });
+
+    it('should return error if User.find() fails', async () => {
+      User.find = jest.fn().mockImplementation(() => {
+        throw new Error('mock error');
+      });
+      const response = await request(app).get('/users');
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe('Internal Server Error');
+      User.find.mockReset();
     });
   });
 
@@ -147,6 +171,16 @@ describe('User collection', () => {
       expect(response.body).toHaveProperty('name', expect.any(String));
       expect(response.body).toHaveProperty('membership', null);
       expect(response.body).toHaveProperty('ponds', expect.any(Array));
+    });
+
+    it('fail (ISE), should return error if User.findById() fails', async () => {
+      User.findById = jest.fn().mockImplementation(() => {
+        throw new Error('mock error');
+      });
+      const response = await request(app).get('/users/' + String(userId));
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe('Internal Server Error');
+      User.findById.mockReset();
     });
   });
 
