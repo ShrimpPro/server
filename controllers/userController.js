@@ -33,6 +33,28 @@ class userController {
     }
   }
 
+  static async updateUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { name, phoneNumber, address, images } = req.body;
+
+      const currentUser = await User.findById(id);
+      if(!currentUser) throw { name: 'NotFound' };
+
+      currentUser.name = name;
+      currentUser.phoneNumber = phoneNumber;
+      currentUser.address = address;
+      currentUser.images = images;
+
+      await currentUser.save();
+
+      currentUser.password = undefined;
+      res.status(200).json(currentUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async login (req, res, next) {
     try {
       const { email, password } = req.body;

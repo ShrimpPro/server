@@ -45,9 +45,13 @@ class partnerController {
   static async addDeviceAndPond(req, res, next) {
     try {
       const { id } = req.user;
+      
+      const currentUser = await User.findById(id);
+      if (!currentUser.membership) throw { name: 'NoMembership' }
+      if (currentUser.membership === 'basic' && currentUser.ponds.length === 1) throw { name: 'MaximumLimit' }
+      
       const { name } = await Device.findOne().sort({$natural:-1});
       const newName = `device-${Number(name.split('-')[1]) + 1}`;
-
       const createdDevice = await Device.create({
         name: newName,
         type: 'esp32',
@@ -62,7 +66,6 @@ class partnerController {
       createdDevice.pond = createdPond._id;
       await createdDevice.save();
 
-      const currentUser = await User.findById(id);
       currentUser.ponds.push(createdPond._id);
       await currentUser.save();
 

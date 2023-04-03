@@ -17,6 +17,21 @@ const userSchema = new Schema({
     enum: ['premium', 'basic', null],
     default: null
   },
+  name: {
+    type: String,
+    required: [true, 'Name is required']
+  },
+  phoneNumber: {
+    type: String,
+    required: [true, 'Phone Number is required']
+  },
+  address: {
+    type: String,
+    required: [true, 'Address is required']
+  },
+  images: [{
+    type: String
+  }],
   ponds: [{
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'Pond'
