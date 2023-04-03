@@ -2,6 +2,7 @@ const Pond = require("../models/pond");
 const History = require('../models/history');
 const Harvest = require('../models/harvest');
 const Device = require("../models/device");
+const User = require("../models/user");
 
 class partnerController {
   static async getPonds (req, res, next) {
@@ -9,11 +10,11 @@ class partnerController {
       const ponds = await Pond.find({ userId: req.user.id })
         .populate('device')
         .populate({
-            path: 'histories',
-            options: {
-                sort: { createdAt: -1 },
-                limit: 10
-            }
+          path: 'histories',
+          options: {
+              sort: { createdAt: -1 },
+              limit: 7
+          }
         })
         .populate('harvests');
       res.status(200).json(ponds);
@@ -28,11 +29,11 @@ class partnerController {
       const pond = await Pond.findById(id)
         .populate('device')
         .populate({
-            path: 'histories',
-            options: {
-                sort: { createdAt: -1 },
-                limit: 10
-              }
+          path: 'histories',
+          options: {
+            sort: { createdAt: -1 },
+            limit: 7
+          }
         })
         .populate('harvests');
       res.status(200).json(pond);
@@ -44,9 +45,13 @@ class partnerController {
   static async addDeviceAndPond(req, res, next) {
     try {
       const { id } = req.user;
+      
+      const currentUser = await User.findById(id);
+      if (!currentUser.membership) throw { name: 'NoMembership' }
+      if (currentUser.membership === 'basic' && currentUser.ponds.length === 1) throw { name: 'MaximumLimit' }
+      
       const { name } = await Device.findOne().sort({$natural:-1});
       const newName = `device-${Number(name.split('-')[1]) + 1}`;
-
       const createdDevice = await Device.create({
         name: newName,
         type: 'esp32',
@@ -54,12 +59,15 @@ class partnerController {
       });
 
       const createdPond = await Pond.create({
-          userId: id,
-          device: createdDevice._id
+        userId: id,
+        device: createdDevice._id
       });
 
       createdDevice.pond = createdPond._id;
       await createdDevice.save();
+
+      currentUser.ponds.push(createdPond._id);
+      await currentUser.save();
 
       res.status(201).json({ device: createdDevice, pond: createdPond });
     } catch (error) {

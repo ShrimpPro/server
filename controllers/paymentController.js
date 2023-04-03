@@ -2,12 +2,6 @@ const Xendit = require('../lib/xendit');
 const Order = require("../models/order");
 
 
-
-// const invoiceSpecificOptions = {};
-// const payoutSpecificOptions = {};
-// const i = new Invoice(invoiceSpecificOptions);
-// const p = new Payout(payoutSpecificOptions);
-
 class PaymentController {
   static async createInvoice(req, res, next) {
     try {
@@ -56,7 +50,7 @@ class PaymentController {
       res.status(200).json(updatePaid);
       // manggil ketika pembayaran sukses setelah deploy
       // status pending dirubah jd success
-      // tambahin biar pas udh dibayar, mengurangi serangan hacker 
+      // tambahin biar pas udh dibayar, mengurangi serangan hacker (---wajib)
     } catch (error) {
       console.log(error)
       next(error)
