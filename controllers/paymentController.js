@@ -76,28 +76,24 @@ class PaymentController {
         if (!data) {
           return res.status(404).json({ message: "Data not found" });
         }
-
+  
         if (data.totalPrice !== paid_amount) {
           return res
             .status(400)
             .json({ message: "Paid amount not same with amount" });
         }
-
+  
         await Order.update({ status: "PAID" }, { where: { invoice: id } });
-
+  
         return res.status(200).json({ message: "Update to PAID Success" });
       } else if (status === "EXPIRED") {
         let data = await Order.findOne({ where: { invoice: id } });
-        let orderProd = await OrderProduct.findAll({
-          where: { OrderId: data.id },
-        });
         if (!data) {
           return res.status(404).json({ message: "Data not found" });
         }
-        let updatedPayment = await Order.update(
-          { status: "EXPIRED" },
-          { where: { invoice: id } }
-        );
+  
+        await Order.update({ status: "EXPIRED" }, { where: { invoice: id } });
+  
         return res.status(200).json({ message: "Update to Expired Success" });
       }
     } catch (err) {
