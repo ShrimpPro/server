@@ -9,11 +9,11 @@ const pondSchema = new Schema({
   },
   temp: {
     type: Number,
-    required: true
+    default: null
   },
-  ph: {
+  pH: {
     type: Number,
-    required: true
+    default: null
   },
   userId: {
     type: mongoose.SchemaTypes.ObjectId,
@@ -22,11 +22,13 @@ const pondSchema = new Schema({
   },
   histories: [{
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'History'
+    ref: 'History',
+    default: []
   }],
   harvests: [{
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Harvest'
+    ref: 'Harvest',
+    default: []
   }],
 }, { timestamps: true });
 

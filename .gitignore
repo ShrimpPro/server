@@ -1,3 +1,5 @@
 node_modules
 .env
 user-seeder.js
+ecosystem.config.js
+sandbox.js

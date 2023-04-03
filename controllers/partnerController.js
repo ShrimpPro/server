@@ -1,16 +1,87 @@
 const Pond = require("../models/pond");
-const History = require('../models/History');
-const Harvest = require('../models/Harvest');
+const History = require('../models/history');
+const Harvest = require('../models/harvest');
 const Device = require("../models/device");
+const User = require("../models/user");
 
 class partnerController {
   static async getPonds (req, res, next) {
     try {
-      const ponds = await Pond.find()
+      const ponds = await Pond.find({ userId: req.user.id })
         .populate('device')
-        .populate('histories')
-        .populate('harvests');
+        .populate({
+          path: 'histories',
+          options: {
+              sort: { createdAt: -1 },
+              limit: 7
+          }
+        })
+        .populate({
+          path: 'harvests',
+          options: {
+            sort: { createdAt: -1 },
+            limit: 5
+          }
+        });
       res.status(200).json(ponds);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getPondDetail (req, res, next) {
+    try {
+      const { id } = req.params;
+      const pond = await Pond.findById(id)
+        .populate('device')
+        .populate({
+          path: 'histories',
+          options: {
+            sort: { createdAt: -1 },
+            limit: 7
+          }
+        })
+        .populate({
+          path: 'harvests',
+          options: {
+            sort: { createdAt: -1 },
+            limit: 5
+          }
+        });
+      res.status(200).json(pond);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async addDeviceAndPond(req, res, next) {
+    try {
+      const { id } = req.user;
+      
+      const currentUser = await User.findById(id);
+      if (!currentUser.membership) throw { name: 'NoMembership' }
+      if (currentUser.membership === 'basic' && currentUser.ponds.length === 1) throw { name: 'MaximumLimit' }
+      
+      const { name } = await Device.findOne().sort({$natural:-1});
+      const newName = `device-${Number(name.split('-')[1]) + 1}`;
+      const createdDevice = await Device.create({
+        name: newName,
+        type: 'esp32',
+        detail: 'alat sensor pengukur ph dan temperatur'
+      });
+
+      const createdPond = await Pond.create({
+        userId: id,
+        device: createdDevice._id
+      });
+
+      createdDevice.pond = createdPond._id;
+      await createdDevice.save();
+
+      currentUser.ponds.push(createdPond._id);
+      await currentUser.save();
+
+      res.status(201).json({ device: createdDevice, pond: createdPond });
     } catch (error) {
       next(error);
     }
