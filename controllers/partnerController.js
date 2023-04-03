@@ -16,7 +16,13 @@ class partnerController {
               limit: 7
           }
         })
-        .populate('harvests');
+        .populate({
+          path: 'harvests',
+          options: {
+            sort: { createdAt: -1 },
+            limit: 5
+          }
+        });
       res.status(200).json(ponds);
     } catch (error) {
       next(error);
@@ -35,7 +41,13 @@ class partnerController {
             limit: 7
           }
         })
-        .populate('harvests');
+        .populate({
+          path: 'harvests',
+          options: {
+            sort: { createdAt: -1 },
+            limit: 5
+          }
+        });
       res.status(200).json(pond);
     } catch (error) {
       next(error);
