@@ -25,7 +25,7 @@ class PaymentController {
       })
       // insert ordernya disini
       console.log(invoice)
-      await Order.create({
+      const order = await Order.create({
         totalPrice: totalPrice,
         user: req.user.id,
         status: 'PENDING',
