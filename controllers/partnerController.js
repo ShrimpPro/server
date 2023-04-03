@@ -2,6 +2,7 @@ const Pond = require("../models/pond");
 const History = require('../models/history');
 const Harvest = require('../models/harvest');
 const Device = require("../models/device");
+const User = require("../models/user");
 
 class partnerController {
   static async getPonds (req, res, next) {
@@ -60,6 +61,10 @@ class partnerController {
 
       createdDevice.pond = createdPond._id;
       await createdDevice.save();
+
+      const currentUser = await User.findById(id);
+      currentUser.ponds.push(createdPond._id);
+      await currentUser.save();
 
       res.status(201).json({ device: createdDevice, pond: createdPond });
     } catch (error) {

@@ -25,6 +25,7 @@ const errorHandler = (error, req, res, next) => {
       break;
 
     case 'NotFound':
+    case 'CastError':
       res.status(404).json({ message: 'Data not found' });
       break;
   
