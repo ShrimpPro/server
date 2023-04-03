@@ -12,10 +12,44 @@ class userController {
     }
   }
 
+  static async getUserDetail (req, res, next) {
+    try {
+      const { id } = req.params;
+      const user = await User.findById(id, { password: 0 })
+        .populate('ponds')
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async register(req, res, next) {
     try {
       const user = await User.create(req.body);
+      user.password = undefined;
       res.status(201).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateUser(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { name, phoneNumber, address, images } = req.body;
+
+      const currentUser = await User.findById(id);
+      if(!currentUser) throw { name: 'NotFound' };
+
+      currentUser.name = name;
+      currentUser.phoneNumber = phoneNumber;
+      currentUser.address = address;
+      currentUser.images = images;
+
+      await currentUser.save();
+
+      currentUser.password = undefined;
+      res.status(200).json(currentUser);
     } catch (error) {
       next(error);
     }
@@ -34,8 +68,26 @@ class userController {
 
       const payload = { id: userFound._id };
       const access_token = createToken(payload);
+      
+      res.status(200).json({ access_token });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-      res.send({ access_token });
+  static async updateMembership(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { membership } = req.body;
+
+      const currentUser = await User.findById(id);
+      if (!currentUser) throw { name: 'NotFound' };
+
+      currentUser.membership = membership;
+      await currentUser.save();
+
+      currentUser.password = undefined;
+      res.status(200).json(currentUser);
     } catch (error) {
       next(error);
     }

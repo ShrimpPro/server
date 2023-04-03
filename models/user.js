@@ -12,11 +12,26 @@ const userSchema = new Schema({
     type: String,
     required: [true, 'Email and Password is required']
   },
-  role: {
+  membership: {
     type: String,
-    enum: ['admin', 'partner', 'user'],
-    default: 'user'
+    enum: ['premium', 'basic', null],
+    default: null
   },
+  name: {
+    type: String,
+    required: [true, 'Name is required']
+  },
+  phoneNumber: {
+    type: String,
+    required: [true, 'Phone Number is required']
+  },
+  address: {
+    type: String,
+    required: [true, 'Address is required']
+  },
+  images: [{
+    type: String
+  }],
   ponds: [{
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'Pond'

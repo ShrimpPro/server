@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "set NODE_ENV=production&& node ./bin/www",
-    "dev": "set NODE_ENV=development&& nodemon ./bin/www",
-    "test": "set NODE_ENV=test&& jest --coverage --forceExit --detectOpenHandles"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "test": "set NODE_ENV=test&& jest --coverage  --forceExit --detectOpenHandles"
   },
   "repository": {
     "type": "git",

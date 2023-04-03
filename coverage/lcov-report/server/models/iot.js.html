@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">86.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/15</span>
+                <span class='fraction'>13/15</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">86.66% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/15</span>
+                <span class='fraction'>13/15</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -90,54 +90,54 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const database = require("../config/firebase");
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">const database = require("../config/firebase");
 const { ref, get } = require("firebase/database");
 &nbsp;
 class IoT {
-<span class="fstat-no" title="function not covered" >  st</span>atic async findAll() {
-    const dataRef = <span class="cstat-no" title="statement not covered" >ref(database);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const snapshot = <span class="cstat-no" title="statement not covered" >await get(dataRef);</span>
-      const data = <span class="cstat-no" title="statement not covered" >snapshot.val();</span>
-<span class="cstat-no" title="statement not covered" >      return data;</span>
+  static async findAll() {
+    const dataRef = ref(database);
+    try {
+      const snapshot = await get(dataRef);
+      const data = snapshot.val();
+      return data;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      throw new Error('The read failed: ' + error.code);</span>
     }
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  st</span>atic async findById(id) {
-    const dataRef = <span class="cstat-no" title="statement not covered" >ref(database, `${id}/`);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const snapshot = <span class="cstat-no" title="statement not covered" >await get(dataRef);</span>
-      const data = <span class="cstat-no" title="statement not covered" >snapshot.val();</span>
-<span class="cstat-no" title="statement not covered" >      return data;</span>
+  static async findById(id) {
+    const dataRef = ref(database, `${id}/`);
+    try {
+      const snapshot = await get(dataRef);
+      const data = snapshot.val();
+      return data;
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      throw new Error('The read failed: ' + error.code);</span>
     }
@@ -151,7 +151,11 @@ module.exports = IoT;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+<<<<<<< HEAD
                 at 2023-04-03T17:28:31.420Z
+=======
+                at 2023-04-03T14:05:02.605Z
+>>>>>>> a877b59b054f65a8e8579de9879724f50a1c2fdb
             </div>
         <script src="../../prettify.js"></script>
         <script>
