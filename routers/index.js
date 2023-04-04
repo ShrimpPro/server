@@ -11,7 +11,7 @@ router.use('/users', userRouter);
 router.use('/iot', iotRouter);
 router.post('/testpaid',(req, rest) => rest.send('Failed'))
 router.use('/partners', authentication, partnerRouter);
-router.use('/payments', authentication, paymentRouter);
+router.use('/payments', paymentRouter);
 router.use(errorHandler);
 
 

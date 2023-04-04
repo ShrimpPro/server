@@ -45,16 +45,17 @@ class PaymentController {
 
   static async paid(req, res, next) {
     try {
-      let orderId = req.body.orderId
-      const currentPaid = await Order.findById(orderId);
-      if (!currentPaid) throw { name: 'NotFound' };
-
-      currentPaid.status = 'SUCCESS';
-      const updatePaid = await currentPaid.save();
-      res.status(200).json(updatePaid);
-      // manggil ketika pembayaran sukses setelah deploy
-      // status pending dirubah jd success
-      // tambahin biar pas udh dibayar, mengurangi serangan hacker 
+      const { id, status } = req.body;
+      if (status === 'PAID') {
+        const currentPaid = await Order.findOne({ invoice: `https://checkout-staging.xendit.co/web/${id}` });
+        if (!currentPaid) throw { name: 'NotFound' };
+  
+        currentPaid.status = 'SUCCESS';
+        const updatePaid = await currentPaid.save();
+        res.status(200).json(updatePaid);
+      } else {
+        res.status(400).json({ message: 'Payment failed for id ' + id })
+      }
     } catch (error) {
       console.log(error)
       next(error)
