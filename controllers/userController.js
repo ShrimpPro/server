@@ -1,6 +1,8 @@
 const { comparePassword } = require("../helpers/bcrypt");
 const { createToken } = require("../helpers/jwt");
 const User = require("../models/user");
+const { Expo } = require("expo-server-sdk");
+const expo = new Expo();
 
 class userController {
   static async getUsers (req, res, next) {
