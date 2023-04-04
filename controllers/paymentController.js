@@ -91,42 +91,42 @@ class PaymentController {
     }
   }
 
-  static async updateStatusOrder(req, res, next) {
-    try {
-      let x = req.headers["x-callback-token"];
-      let { status, paid_amount, id } = req.body;
-      if (x !== process.env.XENDIT_X) {
-        return res.status(401).json({ message: "You are not authorized" });
-      }
-      if (status === "PAID") {
-        let data = await Order.findOne({ where: { invoice: id } });
-        if (!data) {
-          return res.status(404).json({ message: "Data not found" });
-        }
+  // static async updateStatusOrder(req, res, next) {
+  //   try {
+  //     let x = req.headers["x-callback-token"];
+  //     let { status, paid_amount, id } = req.body;
+  //     if (x !== process.env.XENDIT_X) {
+  //       return res.status(401).json({ message: "You are not authorized" });
+  //     }
+  //     if (status === "PAID") {
+  //       let data = await Order.findOne({ where: { invoice: id } });
+  //       if (!data) {
+  //         throw {name: 'NotFound'}
+  //       }
   
-        if (data.totalPrice !== paid_amount) {
-          return res
-            .status(400)
-            .json({ message: "Paid amount not same with amount" });
-        }
+  //       if (data.totalPrice !== paid_amount) {
+  //         return res
+  //           .status(400)
+  //           .json({ message: "Paid amount not same with amount" });
+  //       }
   
-        await Order.update({ status: "PAID" }, { where: { invoice: id } });
+  //       await Order.update({ status: "PAID" }, { where: { invoice: id } });
   
-        return res.status(200).json({ message: "Update to PAID Success" });
-      } else if (status === "EXPIRED") {
-        let data = await Order.findOne({ where: { invoice: id } });
-        if (!data) {
-          return res.status(404).json({ message: "Data not found" });
-        }
+  //       return res.status(200).json({ message: "Update to PAID Success" });
+  //     } else if (status === "EXPIRED") {
+  //       let data = await Order.findOne({ where: { invoice: id } });
+  //       if (!data) {
+  //         return res.status(404).json({ message: "Data not found" });
+  //       }
   
-        await Order.update({ status: "EXPIRED" }, { where: { invoice: id } });
+  //       await Order.update({ status: "EXPIRED" }, { where: { invoice: id } });
   
-        return res.status(200).json({ message: "Update to Expired Success" });
-      }
-    } catch (err) {
-      next(err);
-    }
-  }
+  //       return res.status(200).json({ message: "Update to Expired Success" });
+  //     }
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 }
 
 module.exports = PaymentController;
