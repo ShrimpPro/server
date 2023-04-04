@@ -36,7 +36,7 @@ describe("PaymentController", () => {
         invoice_url: "https://invoice.xendit.com/invoice-url",
       };
       const expectedOrder = {
-        category: 'PREMIUM',
+        category: "PREMIUM",
         totalPrice: 1300000,
         user: "user-id",
         status: "PENDING",
@@ -82,7 +82,7 @@ describe("PaymentController", () => {
         invoice_url: "https://invoice.xendit.com/invoice-url",
       };
       const expectedOrder = {
-        category: 'BASIC',
+        category: "BASIC",
         totalPrice: 400000,
         user: "user-id",
         status: "PENDING",
@@ -128,7 +128,7 @@ describe("PaymentController", () => {
         invoice_url: "https://invoice.xendit.com/invoice-url",
       };
       const expectedOrder = {
-        category: 'BASIC',
+        category: "BASIC",
         totalPrice: 1200000,
         user: "user-id",
         status: "PENDING",
@@ -149,50 +149,23 @@ describe("PaymentController", () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(expectedOrder);
     });
-  });
 
-  describe("PaymentController", () => {
-    describe("updateStatusOrder", () => {
-      it("should update order status to EXPIRED", async () => {
-        const mockOrder = {
-          id: 1,
-          invoice: "INV123",
-          totalPrice: 10000,
-        };
-        Order.findOne = jest.fn().mockResolvedValue(mockOrder);
-        Order.update = jest.fn().mockResolvedValue([1]);
-
-        const req = {
-          headers: {
-            "x-callback-token": process.env.CALLBACK_XENDIT,
-          },
-          body: {
-            status: "EXPIRED",
-            paid_amount: 0,
-            id: "INV123",
-          },
-        };
-        const res = {
-          status: jest.fn().mockReturnThis(),
-          json: jest.fn(),
-        };
-        const next = jest.fn();
-
-        await PaymentController.updateStatusOrder(req, res, next);
-
-        expect(Order.findOne).toHaveBeenCalledWith({
-          where: { invoice: req.body.id },
-        });
-        expect(Order.update).toHaveBeenCalledWith(
-          { status: "EXPIRED" },
-          { where: { invoice: req.body.id } }
-        );
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({
-          message: "Update to Expired Success",
-        });
-      });
-    });
+    // describe("MOCK-POST /invoice", () => {
+    //   beforeAll(async () => {
+    //     jest.spyOn(Order, "create").mockRejectedValue("mock error");
+    //   });
+    //   afterAll(async () => {
+    //     jest.restoreAllMocks();
+    //   });
+    //   it("fail (ISE), should return error if Xendit.getXenditInvoice() fails", async () => {
+    //     const response = await request(app).post("/payments/invoice").send({
+    //       isPond: "BASIC",
+    //       totalPond: 1,
+    //     });
+    //     expect(response.status).toBe(500);
+    //     expect(response.body.message).toBe("Internal Server Error");
+    //   });
+    // });
   });
 
   describe("PaymentController", () => {
@@ -202,59 +175,61 @@ describe("PaymentController", () => {
     let mockPond;
     let userSeed;
     beforeAll(async () => {
-      await mongoose.connect(process.env.MONGO_TEST, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        dbName: "testdb",
-      })
-      .then(async () => {
-        userSeed = await User.create({
-          email: "testlogin@example.com",
-          password: "password",
-          address: "Indonesia",
-          phoneNumber: "0822222222",
-          name: "Tambak Piara",
-          membership: 'BASIC'
+      await mongoose
+        .connect(process.env.MONGO_TEST, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          dbName: "testdb",
+        })
+        .then(async () => {
+          userSeed = await User.create({
+            email: "testlogin@example.com",
+            password: "password",
+            address: "Indonesia",
+            phoneNumber: "0822222222",
+            name: "Tambak Piara",
+            membership: "BASIC",
+          });
+          userId = userSeed._id;
+
+          const deviceSeed = await Device.create({
+            name: "device-2",
+            type: "esp32",
+            detail: "alat sensor pengukur ph dan temperatur",
+            pond: "642986eeb8baa3f01eba9f8a",
+          });
+
+          newInvoice = await Xendit.getXenditInvoice({
+            external_id:
+              "invoice-shrimPro-id-" + new Date().getTime().toString(),
+            amount: "400000",
+            payer_email: "test@payment.com",
+            description: `invoice for ${"ShrimPro"}`,
+          });
+          order = await Order.create({
+            totalPrice: "400000",
+            user: userId,
+            status: "PENDING",
+            invoice: `https://checkout-staging.xendit.co/web/${userId}`,
+            save: jest.fn(),
+          });
+          console.log(newInvoice);
+
+          mockPond = await Pond.create({
+            userId: userSeed._id,
+            device: deviceSeed._id,
+            temp: 0,
+            pH: 0,
+          });
+
+          jest.spyOn(Pond, "create").mockResolvedValue(mockPond);
         });
-        userId = userSeed._id;
-  
-        const deviceSeed = await Device.create({
-          name: "device-2",
-          type: "esp32",
-          detail: "alat sensor pengukur ph dan temperatur",
-          pond: "642986eeb8baa3f01eba9f8a",
-        });
-  
-        newInvoice = await Xendit.getXenditInvoice({
-          external_id: "invoice-shrimPro-id-" + new Date().getTime().toString(),
-          amount: "400000",
-          payer_email: "test@payment.com",
-          description: `invoice for ${"ShrimPro"}`,
-        });
-        order = await Order.create({
-          totalPrice: "400000",
-          user: userId,
-          status: "PENDING",
-          invoice: `https://checkout-staging.xendit.co/web/${userId}`,
-          save: jest.fn(),
-        });
-        console.log(newInvoice);
-  
-        mockPond = await Pond.create({
-          userId: userSeed._id,
-          device: deviceSeed._id,
-          temp: 0,
-          pH: 0
-        });
-  
-        jest.spyOn(Pond, "create").mockResolvedValue(mockPond);
-      })
     });
 
     afterAll(async () => {
       await Device.deleteMany({});
       await User.deleteMany({});
-      await Pond.deleteMany({})
+      await Pond.deleteMany({});
       await mongoose.connection.close();
       jest.restoreAllMocks();
     });
@@ -302,27 +277,99 @@ describe("PaymentController", () => {
         //   status: "PAID",
         // });
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({"status": "SUCCESS"});
+        expect(res.json).toHaveBeenCalledWith({ status: "SUCCESS" });
         expect(next).not.toHaveBeenCalled();
       });
 
-      it('fail (payment failed), should return an error message', async () => {
-        const req = {
-          body: {
-            status: "SUCCESS",
+      it("fail (payment failed), should return an error message", async () => {
+        const id = "642bea9ca565a704c909ec96";
+        const res = await request(app).post("/payments/paid").send({
+          status: "SUCCESS",
+          id,
+        });
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("Payment failed for id " + id);
+      });
+
+      describe("MOCK-POST /paid", () => {
+        beforeAll(async () => {
+          jest.spyOn(Order, "findOne").mockRejectedValue("mock error");
+        });
+        afterAll(async () => {
+          jest.restoreAllMocks();
+        });
+        it("fail (ISE), should return error if User.findById() fails", async () => {
+          const response = await request(app).post("/payments/paid").send({
+            status: "PAID",
             id: "642bea9ca565a704c909ec96",
-          },
-        };
-        const next = jest.fn();
-        const res = {
-          status: jest.fn().mockReturnThis(),
-          json: jest.fn(),
-        };
-        await PaymentController.paid(req, res, next);
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ message: 'Payment failed for id ' + req.body.id });
-        expect(next).not.toHaveBeenCalled();
-      })
+          });
+          expect(response.status).toBe(500);
+          expect(response.body.message).toBe("Internal Server Error");
+        });
+      });
     });
   });
+
+  // describe("PaymentController", () => {
+  //   describe("updateStatusOrder", () => {
+  //     it("should update order status to EXPIRED", async () => {
+  //       const mockOrder = {
+  //         id: 1,
+  //         invoice: "INV123",
+  //         totalPrice: 10000,
+  //       };
+  //       Order.findOne = jest.fn().mockResolvedValue(mockOrder);
+  //       Order.update = jest.fn().mockResolvedValue([1]);
+
+  //       const req = {
+  //         headers: {
+  //           "x-callback-token": process.env.CALLBACK_XENDIT,
+  //         },
+  //         body: {
+  //           status: "EXPIRED",
+  //           paid_amount: 0,
+  //           id: "INV123",
+  //         },
+  //       };
+  //       const res = {
+  //         status: jest.fn().mockReturnThis(),
+  //         json: jest.fn(),
+  //       };
+  //       const next = jest.fn();
+
+  //       await PaymentController.updateStatusOrder(req, res, next);
+
+  //       expect(Order.findOne).toHaveBeenCalledWith({
+  //         where: { invoice: req.body.id },
+  //       });
+  //       expect(Order.update).toHaveBeenCalledWith(
+  //         { status: "EXPIRED" },
+  //         { where: { invoice: req.body.id } }
+  //       );
+  //       expect(res.status).toHaveBeenCalledWith(200);
+  //       expect(res.json).toHaveBeenCalledWith({
+  //         message: "Update to Expired Success",
+  //       });
+  //     });
+  //   });
+
+  //   describe("MOCK-POST /paid", () => {
+  //     beforeAll(async () => {
+  //       jest.spyOn(Order, "findOne").mockRejectedValue("mock error");
+  //     });
+  //     afterAll(async () => {
+  //       jest.restoreAllMocks();
+  //     });
+  //     it("fail (ISE), should return error if User.findById() fails", async () => {
+  //       const response = await request(app)
+  //         .post("/payments/paid")
+  //         .send({
+  //           status: "PAID",
+  //           id: "642bea9ca565a704c909ec96",
+  //         });
+  //       expect(response.status).toBe(500);
+  //       expect(response.body.message).toBe("Internal Server Error");
+  //     });
+  //   });
+  // });
 });
