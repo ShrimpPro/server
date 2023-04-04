@@ -36,6 +36,7 @@ describe("PaymentController", () => {
         invoice_url: "https://invoice.xendit.com/invoice-url",
       };
       const expectedOrder = {
+        category: 'PREMIUM',
         totalPrice: 1300000,
         user: "user-id",
         status: "PENDING",
@@ -81,6 +82,7 @@ describe("PaymentController", () => {
         invoice_url: "https://invoice.xendit.com/invoice-url",
       };
       const expectedOrder = {
+        category: 'BASIC',
         totalPrice: 400000,
         user: "user-id",
         status: "PENDING",
@@ -126,6 +128,7 @@ describe("PaymentController", () => {
         invoice_url: "https://invoice.xendit.com/invoice-url",
       };
       const expectedOrder = {
+        category: 'BASIC',
         totalPrice: 1200000,
         user: "user-id",
         status: "PENDING",
@@ -211,7 +214,7 @@ describe("PaymentController", () => {
           address: "Indonesia",
           phoneNumber: "0822222222",
           name: "Tambak Piara",
-          membership: 'basic'
+          membership: 'BASIC'
         });
         userId = userSeed._id;
   
@@ -302,6 +305,24 @@ describe("PaymentController", () => {
         expect(res.json).toHaveBeenCalledWith({"status": "SUCCESS"});
         expect(next).not.toHaveBeenCalled();
       });
+
+      it('fail (payment failed), should return an error message', async () => {
+        const req = {
+          body: {
+            status: "SUCCESS",
+            id: "642bea9ca565a704c909ec96",
+          },
+        };
+        const next = jest.fn();
+        const res = {
+          status: jest.fn().mockReturnThis(),
+          json: jest.fn(),
+        };
+        await PaymentController.paid(req, res, next);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: 'Payment failed for id ' + req.body.id });
+        expect(next).not.toHaveBeenCalled();
+      })
     });
   });
 });

@@ -28,7 +28,7 @@ describe("Partner collection", () => {
           address: "Indonesia",
           phoneNumber: "0822222222",
           name: "Tambak Piara",
-          membership: "basic",
+          membership: "BASIC",
         });
         const payload = { id: userSeed._id };
         access_token = createToken(payload);
@@ -38,18 +38,18 @@ describe("Partner collection", () => {
           password: "password",
           address: "Indonesia",
           phoneNumber: "08111111",
-          name: "Tambak Piara",
+          name: "Tambak Piara"
         });
         const payloadFail = { id: userSeedFail._id };
         access_token_fail = createToken(payloadFail);
 
-        const userSeedUpgrade = await User.create({
+        let userSeedUpgrade = await User.create({
           email: "testUpgrade@example.com",
           password: "password",
           address: "Indonesia",
           phoneNumber: "08111111",
           name: "Tambak Piara",
-          membership: "basic",
+          membership: "BASIC",
         });
         const payloadUpgrade = { id: userSeedUpgrade._id };
         access_token_upgrade = createToken(payloadUpgrade);
@@ -68,6 +68,8 @@ describe("Partner collection", () => {
 
         userSeedUpgrade.ponds.push(pondsUpgrade._id);
         await userSeedUpgrade.save();
+
+        console.log(userSeedUpgrade.ponds.length)
 
         const pondSeed = await Pond.create({
           userId: userSeed._id,
