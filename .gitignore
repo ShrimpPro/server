@@ -3,3 +3,4 @@ node_modules
 user-seeder.js
 ecosystem.config.js
 sandbox.js
+coverage

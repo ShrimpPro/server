@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
+<coverage generated="1680589035919" clover="3.2.0">
+  <project timestamp="1680589035919" name="All files">
+    <metrics statements="363" coveredstatements="331" conditionals="67" coveredconditionals="52" methods="32" coveredmethods="30" elements="462" coveredelements="413" complexity="0" loc="363" ncloc="363" packages="8" files="24" classes="24"/>
+=======
 <coverage generated="1680578253074" clover="3.2.0">
   <project timestamp="1680578253074" name="All files">
     <metrics statements="370" coveredstatements="333" conditionals="69" coveredconditionals="53" methods="33" coveredmethods="30" elements="472" coveredelements="416" complexity="0" loc="370" ncloc="370" packages="8" files="24" classes="24"/>
+>>>>>>> 2c41bed6a5de5fa3da7a574e60b72708f2d8dec5
     <package name="server">
       <metrics statements="11" coveredstatements="11" conditionals="2" coveredconditionals="1" methods="0" coveredmethods="0"/>
       <file name="app.js" path="C:\Agif\Codes\Hacktiv8\Phase 3\Final-Project\server\app.js">
