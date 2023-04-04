@@ -4,8 +4,6 @@ const Order = require("../models/order");
 const Pond = require('../models/pond');
 const User = require('../models/user');
 
-
-
 // const invoiceSpecificOptions = {};
 // const payoutSpecificOptions = {};
 // const i = new Invoice(invoiceSpecificOptions);
@@ -32,6 +30,7 @@ class PaymentController {
         payer_email: req.user.email,
         description: `invoice for ${"ShrimPro"}`,
       })
+      console.log(invoice);
       // insert ordernya disini
       const order = await Order.create({
         totalPrice: totalPrice,
