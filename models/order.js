@@ -19,6 +19,12 @@ const orderSchema = new mongoose.Schema({
   invoice: {
     type: String,
   },
+  category: {
+    type: String,
+    enum: ['BASIC', 'PREMIUM'],
+    required: [true, 'Category is required'],
+    default: 'BASIC',
+  },
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);

@@ -35,7 +35,8 @@ class PaymentController {
         totalPrice: totalPrice,
         user: req.user.id,
         status: 'PENDING',
-        invoice: invoice.invoice_url
+        invoice: invoice.invoice_url,
+        category: isPond
       })
       res.status(200).json(order)
     } catch (error) {
@@ -77,9 +78,8 @@ class PaymentController {
         await createdDevice.save();
 
         currentUser.ponds.push(createdPond._id);
+        currentUser.membership = currentOrder.category;
         await currentUser.save();
-
-        console.log('sukses');
 
         res.status(200).json(updatePaid);
       } else {
