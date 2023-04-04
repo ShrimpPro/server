@@ -18,10 +18,9 @@ class PaymentController {
       if (!totalPond) totalPond = 1;
 
       if (isPond === 'PREMIUM') {
-        totalPrice = 100000 + totalPond * 10000
+        totalPrice = 100000 + totalPond * 400000
       } else {
-        (totalPond === 0) && (totalPond === 3)
-        totalPrice = totalPond * 10000
+        totalPrice = totalPond * 400000
       }
 
       const invoice = await Xendit.getXenditInvoice({
@@ -54,7 +53,7 @@ class PaymentController {
       if (status === 'PAID') {
         const currentOrder = await Order.findOne({ invoice: `https://checkout-staging.xendit.co/web/${id}` });
         if (!currentOrder) throw { name: 'NotFound' };
-  
+        
         currentOrder.status = 'SUCCESS';
         const updatePaid = await currentOrder.save();
 
@@ -75,7 +74,6 @@ class PaymentController {
           temp: 0,
           pH: 0
         });
-
         createdDevice.pond = createdPond._id;
         await createdDevice.save();
 
