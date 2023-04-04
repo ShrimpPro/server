@@ -1,5 +1,9 @@
 const Xendit = require('../lib/xendit');
+const Device = require('../models/device');
 const Order = require("../models/order");
+const Pond = require('../models/pond');
+const User = require('../models/user');
+
 // const invoiceSpecificOptions = {};
 // const payoutSpecificOptions = {};
 // const i = new Invoice(invoiceSpecificOptions);
@@ -45,16 +49,44 @@ class PaymentController {
 
   static async paid(req, res, next) {
     try {
-      let orderId = req.body.orderId
-      const currentPaid = await Order.findById(orderId);
-      if (!currentPaid) throw { name: 'NotFound' };
+      const { id, status } = req.body;
+      if (status === 'PAID') {
+        const currentOrder = await Order.findOne({ invoice: `https://checkout-staging.xendit.co/web/${id}` });
+        if (!currentOrder) throw { name: 'NotFound' };
+  
+        currentOrder.status = 'SUCCESS';
+        const updatePaid = await currentOrder.save();
 
-      currentPaid.status = 'SUCCESS';
-      const updatePaid = await currentPaid.save();
-      res.status(200).json(updatePaid);
-      // manggil ketika pembayaran sukses setelah deploy
-      // status pending dirubah jd success
-      // tambahin biar pas udh dibayar, mengurangi serangan hacker 
+        const currentUser = await User.findById(currentOrder.user);
+        console.log(currentUser, '<<<<<<<<<<<<<<<<< DEBUG')
+
+        const { name } = await Device.findOne().sort({$natural:-1});
+        const newName = `device-${Number(name.split('-')[1]) + 1}`;
+        const createdDevice = await Device.create({
+          name: newName,
+          type: 'esp32',
+          detail: 'alat sensor pengukur ph dan temperatur'
+        });
+
+        const createdPond = await Pond.create({
+          userId: currentOrder.user,
+          device: createdDevice._id,
+          temp: 0,
+          pH: 0
+        });
+
+        createdDevice.pond = createdPond._id;
+        await createdDevice.save();
+
+        currentUser.ponds.push(createdPond._id);
+        await currentUser.save();
+
+        console.log('sukses');
+
+        res.status(200).json(updatePaid);
+      } else {
+        res.status(400).json({ message: 'Payment failed for id ' + id });
+      }
     } catch (error) {
       console.log(error)
       next(error)
