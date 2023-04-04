@@ -23,6 +23,17 @@ class userController {
     }
   }
 
+  static async currentUser (req, res, next) {
+    try {
+      const { id } = req.user;
+      const user = await User.findById(id, { password: 0 })
+        .populate('ponds')
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async register(req, res, next) {
     try {
       const user = await User.create(req.body);
