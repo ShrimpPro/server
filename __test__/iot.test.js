@@ -4,6 +4,7 @@ const User = require('../models/user');
 const Device = require('../models/device');
 const request = require('supertest');
 const app = require('../app');
+const IoT = require('../models/iot');
 
 describe('IoT collection', () => {
 
@@ -45,12 +46,25 @@ describe('IoT collection', () => {
     await mongoose.connection.close();
   });
 
-
   describe('GET /devices', () => {
     it('success, should return all devices list', async () => {
       const response = await request(app).get('/iot/devices');
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Object);
+    });
+  });
+
+  describe("MOCK-GET /devices", () => {
+    beforeAll(async () => {
+      jest.spyOn(IoT, "findAll").mockRejectedValue("mock error");
+    });
+    afterAll(async () => {
+      jest.restoreAllMocks();
+    });
+    it("fail (ISE), should return error if IoT.findAll() fails", async () => {
+      const response = await request(app).get('/iot/devices');
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Internal Server Error");
     });
   });
 
@@ -61,6 +75,20 @@ describe('IoT collection', () => {
       expect(response.body).toHaveProperty('DeviceId', expect.any(String));
       expect(response.body).toHaveProperty('pH', expect.any(Number));
       expect(response.body).toHaveProperty('temp', expect.any(Number));
+    });
+  });
+
+  describe("MOCK-GET /devices/:pondId", () => {
+    beforeAll(async () => {
+      jest.spyOn(IoT, "findById").mockRejectedValue({ name: 'NotFound' });
+    });
+    afterAll(async () => {
+      jest.restoreAllMocks();
+    });
+    it("fail (ISE), should return error if Pond.findById() fails", async () => {
+      const response = await request(app).get('/iot/devices/:pondIds');
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe("Data not found");
     });
   });
 
