@@ -338,5 +338,12 @@ describe("User collection", () => {
       expect(response.status).toBe(500);
       expect(response.body.message).toBe("Internal Server Error");
     });
+    it("fail (ISE), should return error if User.findById() fails", async () => {
+      const response = await request(app)
+        .patch("/users/expo")
+        .set({ access_token })
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe("Token is required !");
+    });
   });
 });

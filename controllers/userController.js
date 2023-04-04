@@ -108,11 +108,9 @@ class userController {
     try {
       const { id } = req.user;
       const { token } = req.body;
-      if (!token) return res.status(400).json({ message: "Token is required !" });
+      if (!token) throw { name: 'TokenRequired' };
 
-      console.log( id, '<<<<<<<<<<')
       const currentUser = await User.findById(id);
-      if (!currentUser) throw { name: 'NotFound' };
 
       currentUser.expoToken = token;
       await currentUser.save();
