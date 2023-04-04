@@ -23,6 +23,10 @@ const errorHandler = (error, req, res, next) => {
       res.status(400).json({ message: 'Maximum limit reached, please consider upgrading your membership' });
       break;
 
+    case 'TokenRequired':
+      res.status(400).json({ message: "Token is required !" })
+      break;
+
     case 'EmailPasswordInvalid':
       res.status(401).json({ message: 'Email or Password is invalid' });
       break;
@@ -34,6 +38,7 @@ const errorHandler = (error, req, res, next) => {
 
     case 'NotFound':
     case 'CastError':
+      console.log('404 errorHandler');
       res.status(404).json({ message: 'Data not found' });
       break;
   
