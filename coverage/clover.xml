@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <<<<<<< HEAD
+<<<<<<< HEAD
 <coverage generated="1680589035919" clover="3.2.0">
   <project timestamp="1680589035919" name="All files">
     <metrics statements="363" coveredstatements="331" conditionals="67" coveredconditionals="52" methods="32" coveredmethods="30" elements="462" coveredelements="413" complexity="0" loc="363" ncloc="363" packages="8" files="24" classes="24"/>
@@ -56,22 +57,29 @@
         <line num="1" count="3" type="stmt"/>
         <line num="2" count="3" type="stmt"/>
         <line num="3" count="3" type="stmt"/>
+=======
+<coverage generated="1680544187482" clover="3.2.0">
+  <project timestamp="1680544187483" name="All files">
+    <metrics statements="70" coveredstatements="54" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="9" elements="79" coveredelements="63" complexity="0" loc="70" ncloc="70" packages="3" files="3" classes="3"/>
+    <package name="controllers">
+      <metrics statements="55" coveredstatements="39" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="8"/>
+      <file name="paymentController.js" path="C:\Users\syasy\OneDrive\Documents\server\controllers\paymentController.js">
+        <metrics statements="55" coveredstatements="39" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="8"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+>>>>>>> b8f7c5be3d2dc47e359b4f11ac54b495ae6edd53
         <line num="7" count="1" type="stmt"/>
         <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
         <line num="18" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="26" count="2" type="stmt"/>
-        <line num="27" count="2" type="stmt"/>
-        <line num="28" count="2" type="stmt"/>
-        <line num="30" count="2" type="stmt"/>
-        <line num="31" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="33" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
         <line num="39" count="1" type="stmt"/>
+<<<<<<< HEAD
         <line num="40" count="1" type="stmt"/>
         <line num="41" count="1" type="stmt"/>
         <line num="43" count="1" type="stmt"/>
@@ -102,12 +110,20 @@
         <line num="63" count="3" type="cond" truecount="2" falsecount="0"/>
         <line num="64" count="2" type="cond" truecount="4" falsecount="0"/>
         <line num="66" count="1" type="stmt"/>
+=======
+        <line num="41" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+>>>>>>> b8f7c5be3d2dc47e359b4f11ac54b495ae6edd53
         <line num="67" count="1" type="stmt"/>
-        <line num="68" count="1" type="stmt"/>
-        <line num="74" count="1" type="stmt"/>
-        <line num="79" count="1" type="stmt"/>
-        <line num="80" count="1" type="stmt"/>
+        <line num="75" count="1" type="stmt"/>
+        <line num="81" count="1" type="stmt"/>
         <line num="82" count="1" type="stmt"/>
+<<<<<<< HEAD
         <line num="83" count="1" type="stmt"/>
         <line num="85" count="1" type="stmt"/>
         <line num="87" count="2" type="stmt"/>
@@ -273,18 +289,55 @@
         <line num="3" count="4" type="stmt"/>
         <line num="4" count="17" type="stmt"/>
         <line num="6" count="3" type="stmt"/>
+=======
+        <line num="84" count="1" type="stmt"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="93" count="0" type="stmt"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
+        <line num="98" count="1" type="stmt"/>
+        <line num="108" count="1" type="stmt"/>
+        <line num="112" count="1" type="stmt"/>
+        <line num="120" count="1" type="stmt"/>
+        <line num="126" count="1" type="stmt"/>
+        <line num="127" count="1" type="stmt"/>
+        <line num="129" count="1" type="stmt"/>
+        <line num="131" count="0" type="stmt"/>
+        <line num="137" count="0" type="stmt"/>
+        <line num="138" count="0" type="stmt"/>
+        <line num="139" count="0" type="stmt"/>
+        <line num="143" count="1" type="stmt"/>
+        <line num="144" count="1" type="stmt"/>
+        <line num="145" count="1" type="stmt"/>
+        <line num="146" count="1" type="stmt"/>
+        <line num="151" count="1" type="stmt"/>
+        <line num="152" count="1" type="stmt"/>
+        <line num="154" count="1" type="stmt"/>
+        <line num="164" count="1" type="stmt"/>
+        <line num="168" count="1" type="stmt"/>
+        <line num="170" count="1" type="stmt"/>
+        <line num="172" count="0" type="stmt"/>
+        <line num="173" count="0" type="stmt"/>
+        <line num="177" count="0" type="stmt"/>
+        <line num="178" count="0" type="stmt"/>
+>>>>>>> b8f7c5be3d2dc47e359b4f11ac54b495ae6edd53
       </file>
     </package>
-    <package name="server.lib">
+    <package name="lib">
       <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+<<<<<<< HEAD
       <file name="xendit.js" path="C:\Agif\Codes\Hacktiv8\Phase 3\Final-Project\server\lib\xendit.js">
+=======
+      <file name="xendit.js" path="C:\Users\syasy\OneDrive\Documents\server\lib\xendit.js">
+>>>>>>> b8f7c5be3d2dc47e359b4f11ac54b495ae6edd53
         <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="1" count="5" type="stmt"/>
-        <line num="2" count="5" type="stmt"/>
-        <line num="3" count="5" type="stmt"/>
-        <line num="4" count="5" type="stmt"/>
-        <line num="7" count="5" type="stmt"/>
-        <line num="8" count="5" type="stmt"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
         <line num="10" count="2" type="stmt"/>
         <line num="14" count="2" type="stmt"/>
@@ -292,6 +345,7 @@
         <line num="22" count="1" type="stmt"/>
       </file>
     </package>
+<<<<<<< HEAD
     <package name="server.middlewares">
       <metrics statements="35" coveredstatements="33" conditionals="15" coveredconditionals="13" methods="2" coveredmethods="2"/>
       <file name="authentication.js" path="C:\Agif\Codes\Hacktiv8\Phase 3\Final-Project\server\middlewares\authentication.js">
@@ -472,6 +526,16 @@
         <line num="10" count="3" type="stmt"/>
         <line num="11" count="3" type="stmt"/>
         <line num="13" count="3" type="stmt"/>
+=======
+    <package name="models">
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="order.js" path="C:\Users\syasy\OneDrive\Documents\server\models\order.js">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+>>>>>>> b8f7c5be3d2dc47e359b4f11ac54b495ae6edd53
       </file>
     </package>
   </project>
