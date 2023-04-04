@@ -305,6 +305,24 @@ describe("PaymentController", () => {
         expect(res.json).toHaveBeenCalledWith({"status": "SUCCESS"});
         expect(next).not.toHaveBeenCalled();
       });
+
+      it('fail (payment failed), should return an error message', async () => {
+        const req = {
+          body: {
+            status: "SUCCESS",
+            id: "642bea9ca565a704c909ec96",
+          },
+        };
+        const next = jest.fn();
+        const res = {
+          status: jest.fn().mockReturnThis(),
+          json: jest.fn(),
+        };
+        await PaymentController.paid(req, res, next);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: 'Payment failed for id ' + req.body.id });
+        expect(next).not.toHaveBeenCalled();
+      })
     });
   });
 });

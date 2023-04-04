@@ -113,12 +113,11 @@ class userController {
       console.log( id, '<<<<<<<<<<')
       const currentUser = await User.findById(id);
       if (!currentUser) throw { name: 'NotFound' };
-  ``
+
       currentUser.expoToken = token;
       await currentUser.save();
   
       currentUser.password = undefined;
-
       res.status(200).json(currentUser);
     } catch (error) {
       next(error);

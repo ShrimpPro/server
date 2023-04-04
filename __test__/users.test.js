@@ -317,7 +317,7 @@ describe("User collection", () => {
       expect(response.body).toHaveProperty("membership", null);
       expect(response.body).toHaveProperty("images", expect.any(Array));
       expect(response.body).toHaveProperty("ponds", expect.any(Array));
-      // expect(response.body).toHaveProperty("expoToken", token);
+      expect(response.body).toHaveProperty("expoToken", token);
     });
   });
 
@@ -330,11 +330,13 @@ describe("User collection", () => {
       jest.restoreAllMocks();
     });
     it("fail (ISE), should return error if User.findById() fails", async () => {
+      const token = 'ExponentPushToken[ssssssssss]'
       const response = await request(app)
-        .patch("/users/current")
-        .set({ access_token });
-      expect(response.status).toBe(404);
-      // expect(response.body.message).toBe("Internal server error");
+        .patch("/users/expo")
+        .set({ access_token })
+        .send({token})
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe("Internal Server Error");
     });
   });
 });
