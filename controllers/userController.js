@@ -114,11 +114,9 @@ class userController {
       if (!currentUser) throw { name: 'NotFound' };
   
       currentUser.expoToken = token;
+      await currentUser.save();
   
       currentUser.password = undefined;
-
-      console.log(currentUser);
-
       res.status(200).json(currentUser);
     } catch (error) {
       next(error);
