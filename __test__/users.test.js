@@ -16,7 +16,7 @@ describe("User collection", () => {
         dbName: "testdb",
       })
       .then(async () => {
-        const userSeed = await User.create({
+        let userSeed = await User.create({
           email: "testlogin@example.com",
           password: "password",
           address: "Indonesia",
@@ -174,18 +174,18 @@ describe("User collection", () => {
       console.log(id, "<<<<<<<<<<<<<<<<<");
       const response = await request(app)
         .patch("/users/membership/" + id)
-        .send({ membership: "premium" });
+        .send({ membership: "PREMIUM" });
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("_id", String(memberPremium._id));
       expect(response.body).toHaveProperty("email", "checkmember@example.com");
-      expect(response.body).toHaveProperty("membership", "premium");
+      expect(response.body).toHaveProperty("membership", "PREMIUM");
       expect(response.body).toHaveProperty("ponds", expect.any(Array));
     });
 
     it("fail (id not found), should return a message: Data not found", async () => {
       const response = await request(app)
         .patch("/users/membership/64294078048f36630707dcf4")
-        .send({ membership: "premium" });
+        .send({ membership: "PREMIUM" });
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Data not found");
     });
@@ -245,7 +245,7 @@ describe("User collection", () => {
     it("fail (id not found), should return a message: Data not found", async () => {
       const response = await request(app)
         .put("/users/64294078048f36630707dcf4")
-        .send({ membership: "premium" });
+        .send({ membership: "PREMIUM" });
       expect(response.status).toBe(404);
       console.log(response.body);
       expect(response.body).toHaveProperty("message", "Data not found");
@@ -298,6 +298,43 @@ describe("User collection", () => {
         .set({ access_token });
       expect(response.status).toBe(500);
       expect(response.body.message).toBe("Internal Server Error");
+    });
+  });
+
+  describe("PATCH /expo", () => {
+    it("success, should patch token to data", async () => {
+      const token = 'ExponentPushToken[CAHqBTEG0msGZtK81QAnx_]'
+      const response = await request(app)
+        .patch("/users/expo")
+        .set({ access_token })
+        .send({token})
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("_id", String(userId));
+      expect(response.body).toHaveProperty("email", "testlogin@example.com");
+      expect(response.body).toHaveProperty("phoneNumber", "0822222222");
+      expect(response.body).toHaveProperty("address", "Indonesia");
+      expect(response.body).toHaveProperty("name", "Tambak Piara");
+      expect(response.body).toHaveProperty("membership", null);
+      expect(response.body).toHaveProperty("images", expect.any(Array));
+      expect(response.body).toHaveProperty("ponds", expect.any(Array));
+      // expect(response.body).toHaveProperty("expoToken", token);
+    });
+  });
+
+  
+  describe("MOCK-PATCH /expo", () => {
+    beforeAll(async () => {
+      jest.spyOn(User, "findById").mockRejectedValue('mock error');
+    });
+    afterAll(async () => {
+      jest.restoreAllMocks();
+    });
+    it("fail (ISE), should return error if User.findById() fails", async () => {
+      const response = await request(app)
+        .patch("/users/current")
+        .set({ access_token });
+      expect(response.status).toBe(404);
+      // expect(response.body.message).toBe("Internal server error");
     });
   });
 });

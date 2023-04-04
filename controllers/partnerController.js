@@ -61,7 +61,7 @@ class partnerController {
       const currentUser = await User.findById(id);
       console.log(currentUser, '<<<<<<<<<<<<<<<<< DEBUG')
       if (!currentUser.membership) throw { name: 'NoMembership' }
-      if (currentUser.membership === 'basic' && currentUser.ponds.length === 1) throw { name: 'MaximumLimit' }
+      if (currentUser.membership === 'BASIC' && currentUser.ponds.length === 1) throw { name: 'MaximumLimit' }
       
       const { name } = await Device.findOne().sort({$natural:-1});
       const newName = `device-${Number(name.split('-')[1]) + 1}`;
