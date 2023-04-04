@@ -35,7 +35,10 @@ const userSchema = new Schema({
   ponds: [{
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'Pond'
-  }]
+  }],
+  expoToken: {
+    type: String
+  },
 }, { timestamps: true });
 
 userSchema.pre('save', function(next) {

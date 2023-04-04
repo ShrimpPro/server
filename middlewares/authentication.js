@@ -9,7 +9,7 @@ const authentication = async (req, res, next) => {
     const payload = verifyToken(access_token);
 
     const currentUser = await User.findById(payload.id);
-    console.log(currentUser, '<<<<<<<<<<<<<<<<<')
+    // console.log(currentUser, '<<<<<<<<<<<<<<<<<')
     if (!currentUser) throw { name: 'Unauthenticated' };
 
     req.user = {
