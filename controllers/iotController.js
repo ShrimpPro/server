@@ -1,6 +1,9 @@
 const History = require("../models/history");
 const IoT = require("../models/iot");
 const Pond = require("../models/pond");
+const { Expo } = require("expo-server-sdk");
+const User = require("../models/user");
+const expo = new Expo();
 
 class iotController {
   static async getAllDevices (req, res, next) {
@@ -41,6 +44,42 @@ class iotController {
       currentPond.temp = temp;
 
       await currentPond.save();
+
+      if (currentPond.pH >= 8 || currentPond.pH <= 6.5) {
+        console.log(currentPond.pH, '<<<<<<<<<<< pH');
+        const currentUser = await User.findById(currentPond.userId);
+
+        if (!Expo.isExpoPushToken(currentUser.expoToken)) {
+          return res.status(400).json({ message: `Invalid token !` });
+        }
+    
+        const chunks = expo.chunkPushNotifications([
+          {
+            to: currentUser.expoToken,
+            body: 'Kadar pH dalam status bahaya, silahkan periksa kolam',
+            title: 'Bahaya',
+          },
+        ]);
+
+        await expo.sendPushNotificationsAsync(chunks[0])
+      } else if (currentPond.temp >= 30 || currentPond.temp <= 25) {
+        console.log(currentPond.temp, '<<<<<<<<<<< temp');
+        const currentUser = await User.findById(currentPond.userId);
+
+        if (!Expo.isExpoPushToken(currentUser.expoToken)) {
+          return res.status(400).json({ message: `Invalid token !` });
+        }
+    
+        const chunks = expo.chunkPushNotifications([
+          {
+            to: currentUser.expoToken,
+            body: 'Temperatur air dalam status bahaya, silahkan periksa kolam',
+            title: 'Bahaya',
+          },
+        ]);
+
+        await expo.sendPushNotificationsAsync(chunks[0])
+      }
 
       res.status(201).json({ pond: currentPond });
     } catch (error) {
