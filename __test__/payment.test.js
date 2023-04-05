@@ -11,6 +11,11 @@ const { ObjectId } = require("mongoose");
 const Pond = require("../models/pond");
 
 describe("PaymentController", () => {
+
+  afterAll(async () => {
+    jest.restoreAllMocks();
+  });
+
   describe("createInvoice", () => {
     it("should create invoice and order correctly", async () => {
       const req = {
@@ -150,23 +155,23 @@ describe("PaymentController", () => {
       expect(res.json).toHaveBeenCalledWith(expectedOrder);
     });
 
-    // describe("MOCK-POST /invoice", () => {
-    //   beforeAll(async () => {
-    //     jest.spyOn(Order, "create").mockRejectedValue("mock error");
-    //   });
-    //   afterAll(async () => {
-    //     jest.restoreAllMocks();
-    //   });
-    //   it("fail (ISE), should return error if Xendit.getXenditInvoice() fails", async () => {
-    //     const response = await request(app).post("/payments/invoice").send({
-    //       isPond: "BASIC",
-    //       totalPond: 1,
-    //     });
-    //     expect(response.status).toBe(500);
-    //     expect(response.body.message).toBe("Internal Server Error");
-    //   });
-    // });
   });
+  // describe("MOCK-POST /invoice", () => {
+  //   beforeAll(async () => {
+  //     jest.spyOn(Xendit, "getXenditInvoice").mockRejectedValue("mock error");
+  //   });
+  //   afterAll(async () => {
+  //     jest.restoreAllMocks();
+  //   });
+  //   it("fail (ISE), should return error if Xendit.getXenditInvoice() fails", async () => {
+  //     const response = await request(app).post("/payments/invoice").send({
+  //       isPond: "BASIC",
+  //       totalPond: 1,
+  //     });
+  //     expect(response.status).toBe(401);
+  //     expect(response.body.message).toBe("Internal Server Error");
+  //   });
+  // });
 
   describe("PaymentController", () => {
     let order;
