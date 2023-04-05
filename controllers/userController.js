@@ -57,7 +57,7 @@ class userController {
       currentUser.name = name;
       currentUser.phoneNumber = phoneNumber;
       currentUser.address = address;
-      currentUser.images = images;
+      if (currentUser.images.length > 0) currentUser.images = images;
 
       await currentUser.save();
 
