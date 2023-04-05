@@ -60,16 +60,16 @@ class iotController {
             title: 'Bahaya',
           },
         ]);
-
+        
         await expo.sendPushNotificationsAsync(chunks[0])
       } else if (currentPond.temp >= 30 || currentPond.temp <= 25) {
         console.log(currentPond.temp, '<<<<<<<<<<< temp');
         const currentUser = await User.findById(currentPond.userId);
-
+        
         if (!Expo.isExpoPushToken(currentUser.expoToken)) {
           return res.status(400).json({ message: `Invalid token !` });
         }
-    
+
         const chunks = expo.chunkPushNotifications([
           {
             to: currentUser.expoToken,
@@ -77,6 +77,7 @@ class iotController {
             title: 'Bahaya',
           },
         ]);
+        console.log(currentUser,'masukkk', '<<<<<<<<<<<<<<<<')
 
         await expo.sendPushNotificationsAsync(chunks[0])
       }
